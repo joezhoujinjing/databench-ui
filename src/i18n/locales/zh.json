@@ -1,0 +1,137 @@
+{
+  "brand": {
+    "suffix": "控制台"
+  },
+  "nav": {
+    "datasets": "数据集",
+    "ingest": "入库",
+    "transforms": "转换",
+    "recipe": "配方",
+    "lineage": "血缘"
+  },
+  "common": {
+    "loading": "加载中…",
+    "errorPrefix": "错误：",
+    "unknownError": "未知错误",
+    "apply": "应用",
+    "prev": "← 上一页",
+    "next": "下一页 →",
+    "load": "加载",
+    "rawJson": "原始 JSON",
+    "none": "无",
+    "dash": "—"
+  },
+  "language": {
+    "label": "语言",
+    "en": "EN",
+    "zh": "中文"
+  },
+  "health": {
+    "configure": "配置 API 地址",
+    "connected": "已连接",
+    "disconnected": "未连接",
+    "checking": "检测中",
+    "apiBaseLabel": "API 基础地址",
+    "apiBasePlaceholder": "/api 或 http://127.0.0.1:8000",
+    "workspace": "工作区",
+    "status": "状态",
+    "unreachable": "无法连接后端。",
+    "checkingEllipsis": "检测中…",
+    "reset": "恢复默认"
+  },
+  "datasets": {
+    "title": "数据集 / 引用",
+    "description": "来自 /refs 的命名引用。每个引用指向对应数据集的最新版本。点击引用或版本可查看其清单与样本。",
+    "filterPlaceholder": "按名称或版本筛选…",
+    "colName": "名称",
+    "colVersion": "版本",
+    "lineage": "血缘",
+    "emptyNoRefs": "暂无引用。先入库一个数据集开始吧。",
+    "emptyNoMatch": "没有匹配筛选条件的引用。"
+  },
+  "detail": {
+    "backToDatasets": "← 数据集",
+    "viewLineage": "查看血缘",
+    "manifest": "清单",
+    "exportJsonl": "导出 JSONL",
+    "exportHint": "从 /export 下载 messages-jsonl 格式的 NDJSON",
+    "samples": "样本",
+    "showingRange": "显示第 {{from}}–{{to}} 条，共 {{total}} 条",
+    "noSamples": "暂无样本",
+    "emptyRange": "该数据集在此范围内没有样本。"
+  },
+  "ingest": {
+    "uploadTitle": "上传 JSONL 文件入库",
+    "uploadDescription": "上传 .jsonl 文件到 /datasets:ingest-jsonl。",
+    "fileLabel": "文件（.jsonl）",
+    "nameLabel": "名称（可选）",
+    "kindLabel": "类型（可选）",
+    "kindInfer": "（自动识别）",
+    "sourceLabel": "来源（可选）",
+    "uploading": "上传中…",
+    "ingestAction": "入库",
+    "ingested": "已入库",
+    "createTitle": "从 JSON 样本创建",
+    "createDescription": "粘贴样本的 JSON 数组；提交到 /datasets。",
+    "messageLabel": "提交说明（可选）",
+    "samplesLabel": "样本（JSON 数组）",
+    "creating": "创建中…",
+    "createAction": "创建数据集",
+    "created": "已创建",
+    "errExpectArray": "需要一个样本的 JSON 数组。",
+    "errInvalidJson": "JSON 无效：{{message}}"
+  },
+  "transforms": {
+    "title": "转换",
+    "emptyList": "没有已注册的转换算子。",
+    "runHeading": "运行",
+    "selectPrompt": "选择一个转换算子来运行。",
+    "runVerb": "运行",
+    "paramsSchema": "参数 schema",
+    "inputsLabel": "输入（引用/版本，每行一个或以逗号分隔）",
+    "paramsLabel": "参数（JSON 对象，可选）",
+    "outputRefLabel": "输出引用（可选）",
+    "running": "运行中…",
+    "runAction": "运行转换",
+    "outputManifest": "输出清单",
+    "errNeedInput": "请至少提供一个输入引用/版本。",
+    "errParamsObject": "参数必须是 JSON 对象。",
+    "errInvalidParams": "参数 JSON 无效：{{message}}"
+  },
+  "recipe": {
+    "title": "物化配方",
+    "description": "粘贴一个配方对象；提交到 /recipes:materialize 并返回生成的数据集清单。",
+    "recipeLabel": "配方（JSON 对象）",
+    "outputRefLabel": "输出引用（可选）",
+    "materializing": "物化中…",
+    "materializeAction": "物化",
+    "materialized": "已物化",
+    "errRecipeObject": "配方必须是 JSON 对象。",
+    "errInvalidJson": "JSON 无效：{{message}}"
+  },
+  "lineage": {
+    "title": "血缘 / 溯源",
+    "placeholder": "引用或版本，例如 my-dataset 或 sha256:…",
+    "emptyPrompt": "输入引用/版本以查看其溯源 DAG。",
+    "treeView": "树视图",
+    "rootLabel": "血缘"
+  },
+  "manifest": {
+    "version": "版本",
+    "name": "名称",
+    "numRows": "样本数",
+    "kinds": "类型",
+    "otherFields": "其他清单字段"
+  },
+  "sample": {
+    "stepCount": "{{count}} 步"
+  },
+  "errors": {
+    "unreachable": "无法连接后端。databench 服务在运行吗？",
+    "badRequest": "请求错误（解析失败）",
+    "notFound": "未找到",
+    "validation": "校验失败",
+    "generic": "请求失败（HTTP {{status}}）"
+  },
+  "notFound": "页面不存在。"
+}
