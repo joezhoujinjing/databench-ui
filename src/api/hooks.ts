@@ -8,11 +8,13 @@ import { api, DEFAULT_PAGE_LIMIT } from './client'
 import { useBackendKey } from './backend'
 import { ApiError } from './http'
 import type {
+  Extractor,
   IngestKind,
   IngestSamplesRequest,
   MaterializeRequest,
   SamplesPage,
   TransformRunRequest,
+  VocabularyInput,
 } from './types'
 
 // Every query key begins with the active backend base so switching environments
@@ -94,6 +96,57 @@ export function useLineage(ref: string | undefined) {
     queryFn: () => api.getLineage(ref!),
     enabled: !!ref,
     retry: (count, error) => !isNotDeployed(error) && count < 1,
+  })
+}
+
+export function useVocabularies() {
+  const base = useBackendKey()
+  return useQuery({
+    queryKey: [base, 'vocabularies'],
+    queryFn: () => api.listVocabularies(),
+    retry: (count, error) => !isNotDeployed(error) && count < 1,
+  })
+}
+
+export function useVocabulary(name: string | undefined) {
+  const base = useBackendKey()
+  return useQuery({
+    queryKey: [base, 'vocabulary', name],
+    queryFn: () => api.getVocabulary(name!),
+    enabled: !!name,
+  })
+}
+
+function useVocabulariesInvalidation() {
+  const qc = useQueryClient()
+  const base = useBackendKey()
+  return () => qc.invalidateQueries({ queryKey: [base, 'vocabularies'] })
+}
+
+export function useDeriveVocabulary() {
+  const invalidate = useVocabulariesInvalidation()
+  return useMutation({
+    mutationFn: (vars: {
+      name: string
+      dataset: string
+      dimension: string
+      extractor?: Extractor
+    }) => api.deriveVocabulary(vars.name, vars),
+    onSuccess: invalidate,
+  })
+}
+
+export function usePutVocabulary() {
+  const invalidate = useVocabulariesInvalidation()
+  const qc = useQueryClient()
+  const base = useBackendKey()
+  return useMutation({
+    mutationFn: (vars: { name: string; payload: VocabularyInput }) =>
+      api.putVocabulary(vars.name, vars.payload),
+    onSuccess: (_data, vars) => {
+      invalidate()
+      qc.invalidateQueries({ queryKey: [base, 'vocabulary', vars.name] })
+    },
   })
 }
 

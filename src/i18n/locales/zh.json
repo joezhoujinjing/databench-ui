@@ -7,7 +7,8 @@
     "ingest": "入库",
     "transforms": "转换",
     "recipe": "配方",
-    "lineage": "血缘"
+    "lineage": "血缘",
+    "vocabularies": "词表"
   },
   "common": {
     "loading": "加载中…",
@@ -20,6 +21,7 @@
     "rawJson": "原始 JSON",
     "none": "无",
     "dash": "—",
+    "cancel": "取消",
     "featureDisabled": "所连接的后端未启用此功能。"
   },
   "language": {
@@ -141,6 +143,55 @@
     "emptyPrompt": "输入引用/版本以查看其溯源 DAG。",
     "treeView": "树视图",
     "rootLabel": "血缘"
+  },
+  "vocab": {
+    "title": "词表",
+    "description": "来自 /v1/vocabularies 的受控术语表。先从数据集标签派生草稿，再整理为规范词表。",
+    "disabled": "所连接的后端未启用词表功能。",
+    "filterPlaceholder": "按名称或维度筛选…",
+    "colName": "名称",
+    "colDimension": "维度",
+    "colTerms": "术语数",
+    "colStatus": "状态",
+    "status": {
+      "draft": "草稿",
+      "curated": "已整理"
+    },
+    "emptyNone": "暂无词表。从数据集派生一个开始吧。",
+    "emptyNoMatch": "没有匹配筛选条件的词表。",
+    "cappedNote": "显示 {{shown}} / {{total}} 个词表（分页限制）。",
+    "backToList": "← 词表",
+    "termCount": "{{count}} 个术语",
+    "termsTitle": "术语",
+    "noTerms": "该词表没有术语。",
+    "provenance": "派生溯源（提取器）",
+    "needsReviewBadge": "{{count}} 项待复核",
+    "needsReviewTitle": "需复核",
+    "needsReviewHint": "这些别名在派生过程中被映射到多个规范词。整理者应在提升为“已整理”前确认所选映射。",
+    "alsoSeen": "也见于",
+    "aliasesPlaceholder": "别名，以逗号分隔",
+    "curateAction": "整理",
+    "curateHint": "编辑每个术语的别名（以逗号分隔）。提交时服务端会强制校验严格不变量：规范词唯一、每个别名仅对应一个规范词、别名与规范词不重叠。",
+    "promoteAction": "提升为已整理",
+    "saveAction": "保存",
+    "submitting": "提交中…",
+    "saved": "已保存新版本。",
+    "deriveTitle": "派生词表",
+    "deriveDescription": "通过 POST /v1/vocabularies/{name}:derive 从数据集标签派生草稿词表。",
+    "deriveAction": "派生",
+    "deriving": "派生中…",
+    "nameLabel": "目标名称",
+    "datasetLabel": "数据集引用",
+    "datasetPlaceholder": "选择一个数据集…",
+    "dimensionLabel": "维度",
+    "dimensionPlaceholder": "例如 brand、unit（开放命名空间）",
+    "extractorAdvanced": "提取器（高级，可选）",
+    "extractorHint": "留空则对已知维度使用服务端预设。填写键名可从最后一条 assistant 回复的 JSON 中提取。",
+    "extractorSource": "来源",
+    "rawKeyLabel": "原始键（raw key）",
+    "stdKeyLabel": "标准键（std key）",
+    "errRequired": "名称、数据集和维度为必填项。",
+    "errExtractorKeys": "请同时填写原始键和标准键，或将提取器留空。"
   },
   "manifest": {
     "version": "版本",

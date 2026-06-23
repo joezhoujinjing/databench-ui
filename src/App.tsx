@@ -11,6 +11,9 @@ import { IngestPage } from './pages/IngestPage'
 import { TransformsPage } from './pages/TransformsPage'
 import { RecipePage } from './pages/RecipePage'
 import { LineagePage } from './pages/LineagePage'
+import { VocabulariesPage } from './pages/VocabulariesPage'
+import { VocabularyDetailPage } from './pages/VocabularyDetailPage'
+import { VocabularyDerivePage } from './pages/VocabularyDerivePage'
 
 const NAV = [
   { to: '/datasets', key: 'nav.datasets', feature: undefined },
@@ -18,6 +21,7 @@ const NAV = [
   { to: '/transforms', key: 'nav.transforms', feature: FEATURES.transforms },
   { to: '/recipe', key: 'nav.recipe', feature: FEATURES.recipes },
   { to: '/lineage', key: 'nav.lineage', feature: FEATURES.lineage },
+  { to: '/vocabularies', key: 'nav.vocabularies', feature: FEATURES.vocabularies },
 ] as const
 
 function NavItem({ to, label }: { to: string; label: string }) {
@@ -51,10 +55,12 @@ function Nav() {
   const transforms = useModuleEnabled(FEATURES.transforms)
   const recipes = useModuleEnabled(FEATURES.recipes)
   const lineage = useModuleEnabled(FEATURES.lineage)
+  const vocabularies = useModuleEnabled(FEATURES.vocabularies)
   const enabled: Record<string, boolean> = {
     [FEATURES.transforms]: transforms,
     [FEATURES.recipes]: recipes,
     [FEATURES.lineage]: lineage,
+    [FEATURES.vocabularies]: vocabularies,
   }
   return (
     <nav className="nav">
@@ -112,6 +118,9 @@ function AppRoutes() {
       <Route path="/transforms" element={<TransformsPage />} />
       <Route path="/recipe" element={<RecipePage />} />
       <Route path="/lineage" element={<LineagePage />} />
+      <Route path="/vocabularies" element={<VocabulariesPage />} />
+      <Route path="/vocabularies/derive" element={<VocabularyDerivePage />} />
+      <Route path="/vocabularies/:name" element={<VocabularyDetailPage />} />
       <Route path="*" element={<div className="card">{t('notFound')}</div>} />
     </Routes>
   )
