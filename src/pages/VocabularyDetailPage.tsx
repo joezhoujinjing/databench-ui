@@ -55,7 +55,7 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
 
   function submit(targetStatus: 'draft' | 'curated') {
     const payload: VocabularyInput = {
-      name: vocab.name ?? routeName,
+      name: routeName,
       dimension: vocab.dimension,
       status: targetStatus,
       terms: draftTerms,
@@ -63,14 +63,14 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
       source: vocab.source ?? null,
     }
     put.mutate(
-      { name: vocab.name ?? routeName, payload },
+      { name: routeName, payload },
       { onSuccess: () => setEditing(false) },
     )
   }
 
   return (
     <>
-      <Card title={vocab.name ?? routeName}>
+      <Card title={routeName}>
         <div className="badges vocab-meta">
           <span className={`badge status-${status}`}>{t(`vocab.status.${status}`)}</span>
           <span className="badge">{t('vocab.colDimension')}: <code>{vocab.dimension}</code></span>

@@ -165,7 +165,7 @@
     "termsTitle": "术语",
     "noTerms": "该词表没有术语。",
     "provenance": "派生溯源（提取器）",
-    "needsReviewBadge": "{{count}} 项待复核",
+    "needsReviewBadge_other": "{{count}} 项待复核",
     "needsReviewTitle": "需复核",
     "needsReviewHint": "这些别名在派生过程中被映射到多个规范词。整理者应在提升为“已整理”前确认所选映射。",
     "alsoSeen": "也见于",
