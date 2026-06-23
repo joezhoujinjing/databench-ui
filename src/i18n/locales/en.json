@@ -7,7 +7,8 @@
     "ingest": "Ingest",
     "transforms": "Transforms",
     "recipe": "Recipe",
-    "lineage": "Lineage"
+    "lineage": "Lineage",
+    "vocabularies": "Vocabularies"
   },
   "common": {
     "loading": "Loading…",
@@ -20,6 +21,7 @@
     "rawJson": "Raw JSON",
     "none": "none",
     "dash": "—",
+    "cancel": "Cancel",
     "featureDisabled": "This feature is not enabled on the connected backend."
   },
   "language": {
@@ -141,6 +143,55 @@
     "emptyPrompt": "Enter a ref/version to inspect its provenance DAG.",
     "treeView": "Tree view",
     "rootLabel": "lineage"
+  },
+  "vocab": {
+    "title": "Vocabularies",
+    "description": "Controlled term registries from /v1/vocabularies. Derive a draft from a dataset's labels, then curate it into a canonical vocabulary.",
+    "disabled": "Vocabularies are not enabled on the connected backend.",
+    "filterPlaceholder": "Filter by name or dimension…",
+    "colName": "Name",
+    "colDimension": "Dimension",
+    "colTerms": "Terms",
+    "colStatus": "Status",
+    "status": {
+      "draft": "draft",
+      "curated": "curated"
+    },
+    "emptyNone": "No vocabularies yet. Derive one from a dataset to get started.",
+    "emptyNoMatch": "No vocabularies match the filter.",
+    "cappedNote": "Showing {{shown}} of {{total}} vocabularies (page-limited).",
+    "backToList": "← Vocabularies",
+    "termCount": "{{count}} terms",
+    "termsTitle": "Terms",
+    "noTerms": "This vocabulary has no terms.",
+    "provenance": "Derivation provenance (extractor)",
+    "needsReviewBadge": "{{count}} need review",
+    "needsReviewTitle": "Needs review",
+    "needsReviewHint": "These aliases were seen mapping to more than one canonical during derivation. A curator should confirm the chosen mapping before promoting to curated.",
+    "alsoSeen": "also seen",
+    "aliasesPlaceholder": "comma-separated aliases",
+    "curateAction": "Curate",
+    "curateHint": "Edit each term's aliases (comma-separated). Submitting enforces the strict invariant server-side: unique canonicals, one canonical per alias, aliases disjoint from canonicals.",
+    "promoteAction": "Promote to curated",
+    "saveAction": "Save",
+    "submitting": "Submitting…",
+    "saved": "Saved a new version.",
+    "deriveTitle": "Derive vocabulary",
+    "deriveDescription": "Derive a draft vocabulary from a dataset's labels via POST /v1/vocabularies/{name}:derive.",
+    "deriveAction": "Derive",
+    "deriving": "Deriving…",
+    "nameLabel": "Target name",
+    "datasetLabel": "Dataset ref",
+    "datasetPlaceholder": "Select a dataset…",
+    "dimensionLabel": "Dimension",
+    "dimensionPlaceholder": "e.g. brand, unit (open namespace)",
+    "extractorAdvanced": "Extractor (advanced, optional)",
+    "extractorHint": "Leave blank to use the server preset for known dimensions. Provide keys to extract from the last assistant turn's JSON.",
+    "extractorSource": "Source",
+    "rawKeyLabel": "Raw key",
+    "stdKeyLabel": "Std key",
+    "errRequired": "Name, dataset and dimension are required.",
+    "errExtractorKeys": "Provide both raw key and std key, or leave the extractor blank."
   },
   "manifest": {
     "version": "version",

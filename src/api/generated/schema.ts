@@ -261,6 +261,73 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vocabularies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Vocabularies
+         * @description Paginated list of named vocabularies (latest version each).
+         */
+        get: operations["list_vocabularies_v1_vocabularies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vocabularies/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Vocabulary
+         * @description Get a vocabulary by name (or content id). 404 if unknown.
+         */
+        get: operations["get_vocabulary_v1_vocabularies__name__get"];
+        /**
+         * Put Vocabulary
+         * @description Accept a curated vocabulary as a new content-addressed version.
+         */
+        put: operations["put_vocabulary_v1_vocabularies__name__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vocabularies/{name}:derive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Derive Vocabulary
+         * @description Derive a draft vocabulary from a dataset's labels, persist it, return it.
+         *
+         *     The extraction rule comes from the request body when provided, otherwise from
+         *     a server-side preset keyed by ``dimension``. If neither resolves, 400.
+         */
+        post: operations["derive_vocabulary_v1_vocabularies__name__derive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/version": {
         parameters: {
             query?: never;
@@ -318,6 +385,29 @@ export interface components {
              * @description minimum compatible frontend client version
              */
             min_client: string;
+        };
+        /**
+         * Extractor
+         * @description A declarative, serializable rule for pulling label pairs out of samples.
+         *
+         *     ``source="assistant_json"`` parses the last assistant turn as a JSON object
+         *     and reads ``raw_key`` / ``std_key`` from it. The keys are data, so the same
+         *     generic extractor serves any dataset that labels with a raw/standard pair -
+         *     nothing dataset-specific lives in the core type. Because it serializes, the
+         *     exact extraction used by :func:`derive_vocabulary` can be recorded as
+         *     provenance and replayed by normalize/validate.
+         */
+        Extractor: {
+            /** Raw Key */
+            raw_key: string;
+            /**
+             * Source
+             * @default assistant_json
+             * @constant
+             */
+            source: "assistant_json";
+            /** Std Key */
+            std_key: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -565,6 +655,20 @@ export interface components {
             total: number;
         };
         /**
+         * Term
+         * @description One canonical term plus the raw forms that map onto it.
+         */
+        Term: {
+            /** Aliases */
+            aliases?: string[];
+            /** Canonical */
+            canonical: string;
+            /** Meta */
+            meta?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
          * ToolCall
          * @description A single tool invocation emitted by an assistant turn.
          */
@@ -671,6 +775,90 @@ export interface components {
              * @description databench package version (databench.__version__)
              */
             service_version: string;
+        };
+        /** VocabulariesPage */
+        VocabulariesPage: {
+            /** Items */
+            items: components["schemas"]["VocabularyInfo"][];
+            /**
+             * Limit
+             * @description page size actually applied (<= server cap)
+             */
+            limit: number;
+            /**
+             * Offset
+             * @description number of items skipped
+             */
+            offset: number;
+            /**
+             * Total
+             * @description total number of items available
+             */
+            total: number;
+        };
+        /**
+         * Vocabulary
+         * @description A controlled, content-addressed registry of canonical terms.
+         */
+        "Vocabulary-Input": {
+            /** Dimension */
+            dimension: string;
+            /** Meta */
+            meta?: {
+                [key: string]: unknown;
+            };
+            /** Name */
+            name?: string | null;
+            /** Source */
+            source?: string | null;
+            /**
+             * Status
+             * @default curated
+             * @enum {string}
+             */
+            status: "draft" | "curated";
+            /** Terms */
+            terms?: components["schemas"]["Term"][];
+        };
+        /**
+         * Vocabulary
+         * @description A controlled, content-addressed registry of canonical terms.
+         */
+        "Vocabulary-Output": {
+            /** Dimension */
+            dimension: string;
+            /** Id */
+            readonly id: string;
+            /** Meta */
+            meta?: {
+                [key: string]: unknown;
+            };
+            /** Name */
+            name?: string | null;
+            /** Source */
+            source?: string | null;
+            /**
+             * Status
+             * @default curated
+             * @enum {string}
+             */
+            status: "draft" | "curated";
+            /** Terms */
+            terms?: components["schemas"]["Term"][];
+        };
+        /**
+         * VocabularyInfo
+         * @description List-view summary of a named vocabulary (latest version).
+         */
+        VocabularyInfo: {
+            /** Dimension */
+            dimension: string;
+            /** Id */
+            id: string;
+            /** Name */
+            name?: string | null;
+            /** Num Terms */
+            num_terms: number;
         };
     };
     responses: never;
@@ -1074,6 +1262,144 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Manifest"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_vocabularies_v1_vocabularies_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VocabulariesPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_vocabulary_v1_vocabularies__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vocabulary-Output"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_vocabulary_v1_vocabularies__name__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Vocabulary-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vocabulary-Output"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    derive_vocabulary_v1_vocabularies__name__derive_post: {
+        parameters: {
+            query: {
+                /** @description source dataset ref or version */
+                dataset: string;
+                /** @description namespace label for the derived vocabulary */
+                dimension: string;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Extractor"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vocabulary-Output"];
                 };
             };
             /** @description Validation Error */

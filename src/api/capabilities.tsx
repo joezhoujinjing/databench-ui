@@ -65,6 +65,7 @@ export const FEATURES = {
   transforms: 'transforms',
   recipes: 'recipes',
   lineage: 'lineage',
+  vocabularies: 'vocabularies',
   jsonlIngest: 'jsonl_ingest',
   export: 'export',
 } as const
