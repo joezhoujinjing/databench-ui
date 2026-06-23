@@ -73,8 +73,9 @@ export function VocabulariesPage() {
               <tbody>
                 {rows.map((v) => {
                   const key = v.name ?? v.id
-                  // Summaries may omit status; the list summary has no status field.
-                  const status = (v as { status?: string }).status
+                  // Older catalogs report null status for pre-existing rows; render
+                  // "—" for those and the badge for vocabs that carry a status.
+                  const status = v.status
                   return (
                     <tr key={v.id}>
                       <td>
