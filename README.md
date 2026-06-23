@@ -5,133 +5,128 @@ content-addressed, immutable datasets, ingesting data, running transforms,
 materializing recipes, and inspecting lineage.
 
 Built with **Vite + React + TypeScript**, **react-router**, and
-**@tanstack/react-query** (server state). The API layer is a single typed client
-in `src/api/`; every request goes through it.
+**@tanstack/react-query** (server state). The API client is **generated from the
+pinned OpenAPI schema** (`schema/openapi.json`) — see [API client](#api-client).
 
-## Features
+## API client
 
-- **Health bar** — shows live `/health` status (connected / disconnected /
-  checking). Click it to configure the API base URL at runtime.
-- **Datasets / Refs** — lists `/refs`; filter, open a ref/version, jump to lineage.
-- **Dataset detail** — Manifest (version / name / num_rows / kinds), paginated
-  sample preview (`/samples`, limit+offset) with kind-aware rendering, and an
-  **Export JSONL** button (`/export`).
-- **Ingest** — two paths: upload a `.jsonl` file (`/datasets:ingest-jsonl`, with
-  optional name/kind/source) or paste a JSON array of samples (`/datasets`).
-- **Transforms** — lists `/transforms`; run one with inputs + optional params JSON
-  + optional output ref (`/transforms/{name}/run`).
-- **Recipe** — paste a recipe JSON and materialize it (`/recipes:materialize`).
-- **Lineage** — load `/lineage/{ref}` and browse the provenance DAG as a
-  collapsible tree (or raw JSON).
+The backend's OpenAPI document is the single source of truth. A pinned copy lives
+at `schema/openapi.json`, and the typed client is generated from it with
+[`openapi-typescript`](https://github.com/openapi-ts/openapi-typescript):
 
-All pages handle loading / empty states and surface readable errors for
-404 (not found), 422 (validation), 400 (parse), and backend-unreachable.
+```bash
+npm run gen:client        # regenerate src/api/generated/schema.ts from the pinned schema
+npm run gen:client:check  # regenerate + fail if it drifts from what's committed (CI gate)
+```
+
+`src/api/generated/schema.ts` is **build output** — never hand-edit it. We chose
+`openapi-typescript` (types only) plus a thin hand-written fetch wrapper
+(`src/api/http.ts`) over a full client generator (e.g. orval) because the wrapper
+needs to own runtime concerns the generator can't: a runtime-configurable origin,
+per-environment bearer tokens, the unified error envelope, and TanStack Query
+cache keys that include the active backend. Domain types are re-exported from the
+generated schema through `src/api/types.ts`.
+
+## Contract highlights
+
+- **Endpoint-only base.** The configured API base is an **origin only** (e.g.
+  `http://127.0.0.1:8000`, or blank for same-origin); the client appends `/v1/…`
+  for domain routes and calls the unversioned meta routes (`/health`, `/version`,
+  `/capabilities`) directly. Configured at **runtime** from the connection panel
+  (persisted in `localStorage` under `databench.api_base`) — not a build-time var.
+- **Per-environment tokens.** A bearer token is stored namespaced per base, so
+  switching environments swaps to that backend's token (no credential bleed).
+- **Capability-driven UI.** On connect the app fetches `/capabilities` + `/version`.
+  Modules are shown/hidden from the `features` map, and the service/api versions are
+  surfaced in the top-bar connection panel. If the backend's `api_version` is
+  unsupported or the client is older than `min_client`, a clear message is shown
+  instead of a blank screen.
+- **Backend-keyed cache.** Every TanStack Query key is prefixed with the active
+  base URL, so switching environments never serves data from a different backend.
+- **Tolerant reads.** Unknown response fields are ignored, optionals tolerated, and
+  `404`/`501` (a not-deployed feature) renders a friendly disabled/empty state.
+- **Unified errors.** Backend errors (`{ error: { code, message, detail? } }`) are
+  parsed and surfaced as `code — message` consistently.
+- **Big-data UX.** Sample views paginate (server cap 500/page, default 20) with a
+  **virtualized, lazy-loading** table; full pulls go through the streaming NDJSON
+  **export** download.
 
 ## Internationalization (i18n)
 
-The UI is bilingual (English / 简体中文) via **react-i18next**.
-
-- **Translations** live in `src/i18n/locales/en.json` and `zh.json`. All UI chrome
-  (nav, buttons, labels, titles, loading/error/empty states) goes through `t()`;
-  no UI strings are hardcoded in components.
-- **Backend data is never translated** — dataset names, versions, transform names,
-  sample content, and lineage contents render verbatim.
-- **Language switcher** (EN / 中文) sits in the top bar; switching is instant.
-- **Default language** follows the browser (`navigator.language`), falling back to
-  English when unsupported. The choice is persisted in `localStorage`
-  (`databench.lang`).
-- Config: `src/i18n/index.ts`. To add UI strings, add the key to **both** locale
-  files and reference it via `t('key')`.
+Bilingual (English / 简体中文) via **react-i18next**. All UI strings go through
+`t()`; backend data (names, versions, sample content, lineage) renders verbatim.
+Translations live in `src/i18n/locales/{en,zh}.json`; add new keys to **both**.
+The language switcher is in the top bar; the choice persists in `localStorage`
+(`databench.lang`).
 
 ## Prerequisites
 
 - Node.js 18+ (developed on Node 20)
-- The databench FastAPI backend (Swagger at `/docs`), by default on
-  `http://127.0.0.1:8000`.
+- The databench FastAPI backend exposing the `/v1` contract.
 
-## Install
+## Install & run
 
 ```bash
 npm install
+npm run dev      # http://localhost:5173
 ```
-
-## Run (dev)
-
-```bash
-npm run dev
-```
-
-Opens on http://localhost:5173.
 
 ### Connecting to the backend
 
-The frontend talks to the API base in `VITE_API_BASE`, which **defaults to
-`/api`**. In dev, the Vite server proxies `/api` → `http://127.0.0.1:8000`
-(stripping the `/api` prefix), so no extra config is needed if the backend runs
-on that address.
-
-To point the dev proxy at a different backend:
+The API base defaults to the **current origin**. In dev, the Vite server proxies
+the `/v1` domain routes plus the meta routes (`/health`, `/version`,
+`/capabilities`) to the backend (default `http://127.0.0.1:8000`). Point the proxy
+elsewhere with:
 
 ```bash
-VITE_PROXY_TARGET=http://localhost:9000 npm run dev
+VITE_PROXY_TARGET=http://127.0.0.1:8001 npm run dev
 ```
 
-To skip the proxy and call a backend directly (e.g. for `npm run preview` or a
-deployed build), set the API base to an absolute URL:
+Or set the base **at runtime** from the connection panel (top-right) to talk to a
+backend directly — useful for switching environments without a rebuild. The panel
+also takes a per-backend bearer token. See `.env.example`.
 
-```bash
-echo 'VITE_API_BASE=http://127.0.0.1:8000' > .env.local
-```
-
-You can also override the API base **at runtime** from the health badge in the
-top-right (persisted in `localStorage`) — useful for quickly switching backends
-without rebuilding. "Reset to default" clears the override.
-
-See `.env.example` for the available variables.
-
-### Backend not running?
-
-The UI degrades gracefully: the health badge shows **disconnected**, and pages
-render a readable error instead of a blank screen.
+If the backend is unreachable the panel shows **disconnected** and the app renders
+a readable message instead of a blank screen.
 
 ## Build
 
 ```bash
-npm run build
+npm run typecheck   # tsc -b
+npm run build       # tsc -b && vite build  ->  dist/
 ```
 
-Runs `tsc -b` (type-check, must be error-free) then `vite build`, emitting static
-assets to `dist/`. Preview the production build with `npm run preview`.
+## CI
+
+`.github/workflows/ci.yml` installs deps, regenerates the client from
+`schema/openapi.json` and fails on drift, then runs typecheck and the production
+build — the frontend half of the cross-repo schema-drift gate.
 
 ## Project layout
 
 ```
-index.html
-vite.config.ts            # dev server + /api proxy
+schema/openapi.json         # pinned backend contract (single source of truth)
+vite.config.ts              # dev server proxy for /v1 + meta routes
 src/
-  main.tsx                # app bootstrap (QueryClient, Router)
-  App.tsx                 # top bar + routes
-  styles.css
+  main.tsx                  # bootstrap: QueryClient, BackendProvider, CapabilitiesProvider, Router
+  App.tsx                   # top bar, feature-gated nav, version gate, routes
   api/
-    types.ts              # Manifest, Sample, TransformInfo, SamplesPage, …
-    client.ts             # typed fetch client + ApiError + runtime API base
-    hooks.ts              # react-query hooks
-  i18n/
-    index.ts              # i18next config (browser detect + localStorage)
-    locales/en.json
-    locales/zh.json
+    generated/schema.ts     # GENERATED from schema/openapi.json (do not edit)
+    types.ts                # domain types re-exported from the generated schema
+    config.ts               # runtime origin-only base + per-base token storage
+    http.ts                 # typed fetch wrapper, auth, error-envelope parsing
+    client.ts               # typed /v1 + meta API surface, export download
+    backend.tsx             # active-backend context (drives cache-keying)
+    capabilities.tsx        # /capabilities + /version context, feature gating
+    version.ts              # client version + compatibility check
+    hooks.ts                # backend-keyed react-query hooks (incl. infinite samples)
   components/
-    HealthBadge.tsx       # /health status + API base config
-    LanguageSwitcher.tsx  # EN / 中文 toggle
-    ManifestView.tsx
-    SampleView.tsx        # kind-aware sample rendering
-    TreeNode.tsx          # collapsible lineage DAG
-    ui.tsx                # Card, Spinner, error/empty states, JsonBlock
+    ConnectionPanel.tsx     # base + token config, status, version surface
+    VirtualizedSamples.tsx  # lazy, virtualized sample browser
+    LanguageSwitcher.tsx ManifestView.tsx SampleView.tsx TreeNode.tsx ui.tsx
   pages/
-    DatasetsPage.tsx
-    DatasetDetailPage.tsx
-    IngestPage.tsx
-    TransformsPage.tsx
-    RecipePage.tsx
-    LineagePage.tsx
+    DatasetsPage.tsx DatasetDetailPage.tsx IngestPage.tsx
+    TransformsPage.tsx RecipePage.tsx LineagePage.tsx
+  i18n/                     # i18next config + en/zh locales
 ```
+</content>

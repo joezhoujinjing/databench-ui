@@ -15,19 +15,19 @@ export function TransformsPage() {
       <Card title={t('transforms.title')}>
         {transforms.isLoading && <Spinner />}
         {transforms.isError && <ErrorState error={transforms.error} />}
-        {transforms.data && transforms.data.length === 0 && (
+        {transforms.data && transforms.data.items.length === 0 && (
           <div className="text-muted">{t('transforms.emptyList')}</div>
         )}
         {transforms.data && (
           <ul className="list">
-            {transforms.data.map((t) => (
-              <li key={`${t.name}@${t.version}`}>
+            {transforms.data.items.map((tr) => (
+              <li key={`${tr.name}@${tr.version}`}>
                 <button
-                  className={`list-item ${selected?.name === t.name ? 'active' : ''}`}
-                  onClick={() => setSelected(t)}
+                  className={`list-item ${selected?.name === tr.name ? 'active' : ''}`}
+                  onClick={() => setSelected(tr)}
                 >
-                  <span className="list-item-title">{t.name}</span>
-                  <code className="text-muted">v{t.version}</code>
+                  <span className="list-item-title">{tr.name}</span>
+                  <code className="text-muted">v{tr.version}</code>
                 </button>
               </li>
             ))}

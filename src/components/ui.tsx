@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
-import { ApiError } from '../api/client'
+import { ApiError } from '../api/http'
 
 export function Spinner({ label }: { label?: string }) {
   const { t } = useTranslation()
@@ -12,12 +12,18 @@ export function EmptyState({ children }: { children: ReactNode }) {
   return <div className="state state-empty">{children}</div>
 }
 
-// `error.message` for an ApiError is already localized at throw time (client.ts
-// uses i18n) or is a raw backend detail string that must be shown verbatim.
+// Friendly state for a feature this deployment does not have wired up.
+export function FeatureDisabled({ children }: { children?: ReactNode }) {
+  const { t } = useTranslation()
+  return <div className="state state-disabled">{children ?? t('common.featureDisabled')}</div>
+}
+
+// For an ApiError we surface the unified envelope's code + message consistently.
+// `message` is either the backend's localized detail or an i18n fallback.
 function messageFor(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.status === 0) return error.message
-    return `${error.status} — ${error.message}`
+    return `${error.code} — ${error.message}`
   }
   if (error instanceof Error) return error.message
   return i18n.t('common.unknownError')

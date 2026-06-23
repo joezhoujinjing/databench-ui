@@ -19,7 +19,8 @@
     "load": "加载",
     "rawJson": "原始 JSON",
     "none": "无",
-    "dash": "—"
+    "dash": "—",
+    "featureDisabled": "所连接的后端未启用此功能。"
   },
   "language": {
     "label": "语言",
@@ -27,42 +28,66 @@
     "zh": "中文"
   },
   "health": {
-    "configure": "配置 API 地址",
     "connected": "已连接",
     "disconnected": "未连接",
     "checking": "检测中",
-    "apiBaseLabel": "API 基础地址",
-    "apiBasePlaceholder": "/api 或 http://127.0.0.1:8000",
-    "workspace": "工作区",
-    "status": "状态",
+    "checkingEllipsis": "检测中…"
+  },
+  "connection": {
+    "configure": "配置后端连接",
+    "apiBaseLabel": "API 地址（仅源 origin）",
+    "apiBasePlaceholder": "http://127.0.0.1:8000（留空 = 当前源）",
+    "apiBaseHint": "仅填写源地址——客户端会自动追加 /v1。留空则使用当前源。",
+    "tokenLabel": "Bearer 令牌（可选）",
+    "tokenPlaceholder": "该后端的令牌",
+    "tokenHint": "按后端分别存储；切换 API 地址时会切换到对应后端的令牌。",
+    "apiVersion": "API 版本",
+    "serviceVersion": "服务版本",
+    "schemaVersion": "Schema 版本",
     "unreachable": "无法连接后端。",
-    "checkingEllipsis": "检测中…",
     "reset": "恢复默认"
+  },
+  "gate": {
+    "connectingTitle": "连接中",
+    "connecting": "正在联系后端…",
+    "cannotConnectTitle": "无法连接后端",
+    "cannotConnectHint": "请在右上角连接面板检查 API 地址，并确认 databench 服务正在运行。",
+    "incompatibleTitle": "后端版本不兼容",
+    "clientTooOld": "该后端要求前端客户端版本不低于 {{min}}，而当前客户端为 {{current}}。请升级控制台。",
+    "apiUnsupported": "本控制台不支持后端 API 版本 “{{api}}”。请升级控制台或连接到兼容的后端。",
+    "incompatibleHint": "你可以在右上角连接面板将控制台指向其他后端。"
   },
   "datasets": {
     "title": "数据集 / 引用",
-    "description": "来自 /refs 的命名引用。每个引用指向对应数据集的最新版本。点击引用或版本可查看其清单与样本。",
+    "description": "来自 /v1/refs 的命名引用。每个引用指向对应数据集的最新版本。点击引用或版本可查看其清单与样本。",
     "filterPlaceholder": "按名称或版本筛选…",
     "colName": "名称",
     "colVersion": "版本",
     "lineage": "血缘",
     "emptyNoRefs": "暂无引用。先入库一个数据集开始吧。",
-    "emptyNoMatch": "没有匹配筛选条件的引用。"
+    "emptyNoMatch": "没有匹配筛选条件的引用。",
+    "cappedNote": "显示 {{shown}} / {{total}} 个引用（分页限制）。"
   },
   "detail": {
     "backToDatasets": "← 数据集",
     "viewLineage": "查看血缘",
     "manifest": "清单",
     "exportJsonl": "导出 JSONL",
-    "exportHint": "从 /export 下载 messages-jsonl 格式的 NDJSON",
+    "exporting": "导出中…",
+    "exportHint": "从 /v1/datasets/{ref}/export 以 NDJSON 流式导出整个数据集",
     "samples": "样本",
-    "showingRange": "显示第 {{from}}–{{to}} 条，共 {{total}} 条",
+    "pageSize": "每页数量",
+    "pageSizeHint": "样本随滚动懒加载（服务端每页上限 {{max}}）。",
+    "loadedOf": "已加载 {{loaded}} / {{total}}",
+    "loadingMore": "加载更多…",
+    "allLoaded": "已加载全部 {{total}} 条样本。",
     "noSamples": "暂无样本",
     "emptyRange": "该数据集在此范围内没有样本。"
   },
   "ingest": {
     "uploadTitle": "上传 JSONL 文件入库",
-    "uploadDescription": "上传 .jsonl 文件到 /datasets:ingest-jsonl。",
+    "uploadDescription": "上传 .jsonl 文件到 /v1/datasets:ingest-jsonl。",
+    "jsonlDisabled": "所连接的后端未启用 JSONL 入库。",
     "fileLabel": "文件（.jsonl）",
     "nameLabel": "名称（可选）",
     "kindLabel": "类型（可选）",
@@ -72,7 +97,7 @@
     "ingestAction": "入库",
     "ingested": "已入库",
     "createTitle": "从 JSON 样本创建",
-    "createDescription": "粘贴样本的 JSON 数组；提交到 /datasets。",
+    "createDescription": "粘贴样本的 JSON 数组；提交到 /v1/datasets。",
     "messageLabel": "提交说明（可选）",
     "samplesLabel": "样本（JSON 数组）",
     "creating": "创建中…",
@@ -100,7 +125,7 @@
   },
   "recipe": {
     "title": "物化配方",
-    "description": "粘贴一个配方对象；提交到 /recipes:materialize 并返回生成的数据集清单。",
+    "description": "粘贴一个配方对象；提交到 /v1/recipes:materialize 并返回生成的数据集清单。",
     "recipeLabel": "配方（JSON 对象）",
     "outputRefLabel": "输出引用（可选）",
     "materializing": "物化中…",
@@ -111,6 +136,7 @@
   },
   "lineage": {
     "title": "血缘 / 溯源",
+    "disabled": "所连接的后端未启用血缘功能。",
     "placeholder": "引用或版本，例如 my-dataset 或 sha256:…",
     "emptyPrompt": "输入引用/版本以查看其溯源 DAG。",
     "treeView": "树视图",
@@ -131,6 +157,7 @@
     "badRequest": "请求错误（解析失败）",
     "notFound": "未找到",
     "validation": "校验失败",
+    "notImplemented": "该后端未实现此功能",
     "generic": "请求失败（HTTP {{status}}）"
   },
   "notFound": "页面不存在。"

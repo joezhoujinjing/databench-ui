@@ -1,68 +1,49 @@
-// Types aligned with the databench FastAPI contract. Samples are intentionally
-// kept loose (a Record keyed by `kind`) so the UI does not hardcode every
-// per-kind subfield — render by `kind` and show the rest generically.
+// Domain types are re-exported from the generated OpenAPI client
+// (src/api/generated/schema.ts). That file is build output regenerated from the
+// pinned schema/openapi.json and must never be hand-edited. Everything below is
+// either a thin alias over a generated schema or an app-only type that has no
+// representation on the wire.
 
-export type SampleKind = 'sft' | 'preference' | 'rl' | 'trajectory'
+import type { components } from './generated/schema'
 
-export interface HealthInfo {
-  status: string
-  workspace_root: string
-}
+type Schemas = components['schemas']
 
-export interface Manifest {
-  version: string
-  name?: string | null
-  num_rows: number
-  kinds: Partial<Record<SampleKind, number>>
-  // The backend may attach additional manifest fields; keep them accessible.
-  [key: string]: unknown
-}
+export type Capabilities = Schemas['Capabilities']
+export type VersionInfo = Schemas['VersionInfo']
+export type Manifest = Schemas['Manifest']
+export type RefInfo = Schemas['RefInfo']
+export type RefsPage = Schemas['RefsPage']
+export type TransformInfo = Schemas['TransformInfo']
+export type TransformsPage = Schemas['TransformsPage']
+export type TransformRunRequest = Schemas['TransformRunRequest']
+export type SamplesPage = Schemas['SamplesPage']
+export type IngestSamplesRequest = Schemas['IngestSamplesRequest']
+export type MaterializeRequest = Schemas['MaterializeRequest']
+export type Recipe = Schemas['Recipe']
+export type SFTSample = Schemas['SFTSample']
+export type PreferenceSample = Schemas['PreferenceSample']
+export type RLSample = Schemas['RLSample']
+export type TrajectorySample = Schemas['TrajectorySample']
+export type Message = Schemas['Message']
 
-export interface Sample {
-  id?: string
-  kind?: SampleKind
-  [key: string]: unknown
-}
+// A sample is the discriminated union the backend returns. We keep an index
+// signature so the UI can read fields generically (tolerant reads) without
+// having to narrow on `kind` for every access.
+export type Sample = (
+  | SFTSample
+  | PreferenceSample
+  | RLSample
+  | TrajectorySample
+) & { id?: string; [key: string]: unknown }
 
-export interface SamplesPage {
-  total: number
-  limit: number
-  offset: number
-  items: Sample[]
-}
+export type SampleKind = NonNullable<Sample['kind']>
 
-// GET /refs -> { name: version }
-export type RefsMap = Record<string, string>
+// /health returns an open string->string map; surface it as such.
+export type HealthInfo = Record<string, string>
 
-export interface TransformInfo {
-  name: string
-  version: string
-  params_schema?: Record<string, unknown> | null
-}
+// Lineage is an arbitrarily nested provenance object.
+export type Lineage = Record<string, unknown>
 
-export interface TransformRunRequest {
-  inputs: string[]
-  params: Record<string, unknown>
-  ref?: string
-}
-
-// Recipe shape is backend-defined; treat as an opaque object the user edits as JSON.
-export type Recipe = Record<string, unknown>
-
-export interface MaterializeRequest {
-  recipe: Recipe
-  ref?: string
-}
-
-export interface CreateDatasetRequest {
-  name?: string
-  message?: string
-  samples: Sample[]
-}
-
-// Lineage is an arbitrarily nested provenance DAG.
-export type Lineage = unknown
-
-export type ExportFormat = 'messages-jsonl'
+export type ExportFormat = 'messages-jsonl' | 'trl'
 
 export type IngestKind = SampleKind

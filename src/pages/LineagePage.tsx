@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLineage } from '../api/hooks'
-import { Card, EmptyState, ErrorState, JsonBlock, Spinner } from '../components/ui'
+import { FEATURES, useModuleEnabled } from '../api/capabilities'
+import { Card, EmptyState, ErrorState, FeatureDisabled, JsonBlock, Spinner } from '../components/ui'
 import { TreeNode } from '../components/TreeNode'
 
 export function LineagePage() {
   const { t } = useTranslation()
+  const enabled = useModuleEnabled(FEATURES.lineage)
   const [params, setParams] = useSearchParams()
   const refFromUrl = params.get('ref') ?? ''
   const [input, setInput] = useState(refFromUrl)
@@ -26,6 +28,14 @@ export function LineagePage() {
     const ref = input.trim()
     setActiveRef(ref)
     setParams(ref ? { ref } : {})
+  }
+
+  if (!enabled) {
+    return (
+      <Card title={t('lineage.title')}>
+        <FeatureDisabled>{t('lineage.disabled')}</FeatureDisabled>
+      </Card>
+    )
   }
 
   return (
