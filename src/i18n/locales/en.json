@@ -1,0 +1,137 @@
+{
+  "brand": {
+    "suffix": "console"
+  },
+  "nav": {
+    "datasets": "Datasets",
+    "ingest": "Ingest",
+    "transforms": "Transforms",
+    "recipe": "Recipe",
+    "lineage": "Lineage"
+  },
+  "common": {
+    "loading": "Loading…",
+    "errorPrefix": "Error:",
+    "unknownError": "Unknown error",
+    "apply": "Apply",
+    "prev": "← Prev",
+    "next": "Next →",
+    "load": "Load",
+    "rawJson": "Raw JSON",
+    "none": "none",
+    "dash": "—"
+  },
+  "language": {
+    "label": "Language",
+    "en": "EN",
+    "zh": "中文"
+  },
+  "health": {
+    "configure": "Configure API base",
+    "connected": "connected",
+    "disconnected": "disconnected",
+    "checking": "checking",
+    "apiBaseLabel": "API base URL",
+    "apiBasePlaceholder": "/api or http://127.0.0.1:8000",
+    "workspace": "workspace",
+    "status": "status",
+    "unreachable": "Backend unreachable.",
+    "checkingEllipsis": "Checking…",
+    "reset": "Reset to default"
+  },
+  "datasets": {
+    "title": "Datasets / Refs",
+    "description": "Named refs from /refs. Each ref points to the latest dataset version. Open a ref or a version to inspect its manifest and samples.",
+    "filterPlaceholder": "Filter by name or version…",
+    "colName": "Name",
+    "colVersion": "Version",
+    "lineage": "lineage",
+    "emptyNoRefs": "No refs yet. Ingest a dataset to get started.",
+    "emptyNoMatch": "No refs match the filter."
+  },
+  "detail": {
+    "backToDatasets": "← Datasets",
+    "viewLineage": "view lineage",
+    "manifest": "Manifest",
+    "exportJsonl": "Export JSONL",
+    "exportHint": "downloads messages-jsonl NDJSON from /export",
+    "samples": "Samples",
+    "showingRange": "Showing {{from}}–{{to}} of {{total}}",
+    "noSamples": "No samples",
+    "emptyRange": "This dataset has no samples in this range."
+  },
+  "ingest": {
+    "uploadTitle": "Ingest JSONL file",
+    "uploadDescription": "Upload a .jsonl file to /datasets:ingest-jsonl.",
+    "fileLabel": "File (.jsonl)",
+    "nameLabel": "Name (optional)",
+    "kindLabel": "Kind (optional)",
+    "kindInfer": "(infer)",
+    "sourceLabel": "Source (optional)",
+    "uploading": "Uploading…",
+    "ingestAction": "Ingest",
+    "ingested": "Ingested",
+    "createTitle": "Create from JSON samples",
+    "createDescription": "Paste a JSON array of samples; posts to /datasets.",
+    "messageLabel": "Commit message (optional)",
+    "samplesLabel": "Samples (JSON array)",
+    "creating": "Creating…",
+    "createAction": "Create dataset",
+    "created": "Created",
+    "errExpectArray": "Expected a JSON array of samples.",
+    "errInvalidJson": "Invalid JSON: {{message}}"
+  },
+  "transforms": {
+    "title": "Transforms",
+    "emptyList": "No transforms registered.",
+    "runHeading": "Run",
+    "selectPrompt": "Select a transform to run it.",
+    "runVerb": "Run",
+    "paramsSchema": "params_schema",
+    "inputsLabel": "Inputs (refs/versions, one per line or comma-separated)",
+    "paramsLabel": "Params (JSON object, optional)",
+    "outputRefLabel": "Output ref (optional)",
+    "running": "Running…",
+    "runAction": "Run transform",
+    "outputManifest": "Output manifest",
+    "errNeedInput": "Provide at least one input ref/version.",
+    "errParamsObject": "Params must be a JSON object.",
+    "errInvalidParams": "Invalid params JSON: {{message}}"
+  },
+  "recipe": {
+    "title": "Materialize recipe",
+    "description": "Paste a recipe object; posts to /recipes:materialize and returns the resulting dataset manifest.",
+    "recipeLabel": "Recipe (JSON object)",
+    "outputRefLabel": "Output ref (optional)",
+    "materializing": "Materializing…",
+    "materializeAction": "Materialize",
+    "materialized": "Materialized",
+    "errRecipeObject": "Recipe must be a JSON object.",
+    "errInvalidJson": "Invalid JSON: {{message}}"
+  },
+  "lineage": {
+    "title": "Lineage / Provenance",
+    "placeholder": "ref or version, e.g. my-dataset or sha256:…",
+    "emptyPrompt": "Enter a ref/version to inspect its provenance DAG.",
+    "treeView": "Tree view",
+    "rootLabel": "lineage"
+  },
+  "manifest": {
+    "version": "version",
+    "name": "name",
+    "numRows": "num_rows",
+    "kinds": "kinds",
+    "otherFields": "Other manifest fields"
+  },
+  "sample": {
+    "stepCount": "{{count}} step(s)"
+  },
+  "errors": {
+    "unreachable": "Cannot reach the backend. Is the databench service running?",
+    "badRequest": "Bad request (parse error)",
+    "notFound": "Not found",
+    "validation": "Validation error",
+    "generic": "Request failed (HTTP {{status}})"
+  },
+  "notFound": "Page not found."
+}
