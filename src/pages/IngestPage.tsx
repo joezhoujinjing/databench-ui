@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCreateDataset, useIngestJsonl } from '../api/hooks'
+import { FEATURES, useModuleEnabled } from '../api/capabilities'
 import type { IngestKind, Sample } from '../api/types'
-import { Card, InlineError } from '../components/ui'
+import { Card, FeatureDisabled, InlineError } from '../components/ui'
 import { ManifestView } from '../components/ManifestView'
 
 const KINDS: IngestKind[] = ['sft', 'preference', 'rl', 'trajectory']
@@ -19,9 +20,17 @@ const SAMPLE_PLACEHOLDER = `[
 ]`
 
 export function IngestPage() {
+  const { t } = useTranslation()
+  const jsonlEnabled = useModuleEnabled(FEATURES.jsonlIngest)
   return (
     <div className="grid-2">
-      <JsonlUploadCard />
+      {jsonlEnabled ? (
+        <JsonlUploadCard />
+      ) : (
+        <Card title={t('ingest.uploadTitle')}>
+          <FeatureDisabled>{t('ingest.jsonlDisabled')}</FeatureDisabled>
+        </Card>
+      )}
       <JsonSamplesCard />
     </div>
   )

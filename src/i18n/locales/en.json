@@ -19,7 +19,8 @@
     "load": "Load",
     "rawJson": "Raw JSON",
     "none": "none",
-    "dash": "—"
+    "dash": "—",
+    "featureDisabled": "This feature is not enabled on the connected backend."
   },
   "language": {
     "label": "Language",
@@ -27,42 +28,66 @@
     "zh": "中文"
   },
   "health": {
-    "configure": "Configure API base",
     "connected": "connected",
     "disconnected": "disconnected",
     "checking": "checking",
-    "apiBaseLabel": "API base URL",
-    "apiBasePlaceholder": "/api or http://127.0.0.1:8000",
-    "workspace": "workspace",
-    "status": "status",
+    "checkingEllipsis": "Checking…"
+  },
+  "connection": {
+    "configure": "Configure backend connection",
+    "apiBaseLabel": "API base (origin only)",
+    "apiBasePlaceholder": "http://127.0.0.1:8000 (blank = same origin)",
+    "apiBaseHint": "Origin only — the client appends /v1 itself. Leave blank to use the current origin.",
+    "tokenLabel": "Bearer token (optional)",
+    "tokenPlaceholder": "token for this backend",
+    "tokenHint": "Stored per-backend; switching the API base swaps to that backend's token.",
+    "apiVersion": "api version",
+    "serviceVersion": "service version",
+    "schemaVersion": "schema version",
     "unreachable": "Backend unreachable.",
-    "checkingEllipsis": "Checking…",
     "reset": "Reset to default"
+  },
+  "gate": {
+    "connectingTitle": "Connecting",
+    "connecting": "Contacting the backend…",
+    "cannotConnectTitle": "Cannot connect to backend",
+    "cannotConnectHint": "Check the API base in the connection panel (top right) and make sure the databench service is running.",
+    "incompatibleTitle": "Incompatible backend version",
+    "clientTooOld": "This backend requires frontend client {{min}} or newer, but this client is {{current}}. Please update the console.",
+    "apiUnsupported": "This console does not support the backend API version \"{{api}}\". Please update the console or point it at a compatible backend.",
+    "incompatibleHint": "You can point the console at a different backend from the connection panel (top right)."
   },
   "datasets": {
     "title": "Datasets / Refs",
-    "description": "Named refs from /refs. Each ref points to the latest dataset version. Open a ref or a version to inspect its manifest and samples.",
+    "description": "Named refs from /v1/refs. Each ref points to the latest dataset version. Open a ref or a version to inspect its manifest and samples.",
     "filterPlaceholder": "Filter by name or version…",
     "colName": "Name",
     "colVersion": "Version",
     "lineage": "lineage",
     "emptyNoRefs": "No refs yet. Ingest a dataset to get started.",
-    "emptyNoMatch": "No refs match the filter."
+    "emptyNoMatch": "No refs match the filter.",
+    "cappedNote": "Showing {{shown}} of {{total}} refs (page-limited)."
   },
   "detail": {
     "backToDatasets": "← Datasets",
     "viewLineage": "view lineage",
     "manifest": "Manifest",
     "exportJsonl": "Export JSONL",
-    "exportHint": "downloads messages-jsonl NDJSON from /export",
+    "exporting": "Exporting…",
+    "exportHint": "streams the full dataset as NDJSON from /v1/datasets/{ref}/export",
     "samples": "Samples",
-    "showingRange": "Showing {{from}}–{{to}} of {{total}}",
+    "pageSize": "Page size",
+    "pageSizeHint": "Samples load lazily as you scroll (server cap {{max}}/page).",
+    "loadedOf": "Loaded {{loaded}} of {{total}}",
+    "loadingMore": "Loading more…",
+    "allLoaded": "All {{total}} samples loaded.",
     "noSamples": "No samples",
     "emptyRange": "This dataset has no samples in this range."
   },
   "ingest": {
     "uploadTitle": "Ingest JSONL file",
-    "uploadDescription": "Upload a .jsonl file to /datasets:ingest-jsonl.",
+    "uploadDescription": "Upload a .jsonl file to /v1/datasets:ingest-jsonl.",
+    "jsonlDisabled": "JSONL ingest is not enabled on the connected backend.",
     "fileLabel": "File (.jsonl)",
     "nameLabel": "Name (optional)",
     "kindLabel": "Kind (optional)",
@@ -72,7 +97,7 @@
     "ingestAction": "Ingest",
     "ingested": "Ingested",
     "createTitle": "Create from JSON samples",
-    "createDescription": "Paste a JSON array of samples; posts to /datasets.",
+    "createDescription": "Paste a JSON array of samples; posts to /v1/datasets.",
     "messageLabel": "Commit message (optional)",
     "samplesLabel": "Samples (JSON array)",
     "creating": "Creating…",
@@ -100,7 +125,7 @@
   },
   "recipe": {
     "title": "Materialize recipe",
-    "description": "Paste a recipe object; posts to /recipes:materialize and returns the resulting dataset manifest.",
+    "description": "Paste a recipe object; posts to /v1/recipes:materialize and returns the resulting dataset manifest.",
     "recipeLabel": "Recipe (JSON object)",
     "outputRefLabel": "Output ref (optional)",
     "materializing": "Materializing…",
@@ -111,6 +136,7 @@
   },
   "lineage": {
     "title": "Lineage / Provenance",
+    "disabled": "Lineage is not enabled on the connected backend.",
     "placeholder": "ref or version, e.g. my-dataset or sha256:…",
     "emptyPrompt": "Enter a ref/version to inspect its provenance DAG.",
     "treeView": "Tree view",
@@ -131,6 +157,7 @@
     "badRequest": "Bad request (parse error)",
     "notFound": "Not found",
     "validation": "Validation error",
+    "notImplemented": "Not implemented on this backend",
     "generic": "Request failed (HTTP {{status}})"
   },
   "notFound": "Page not found."

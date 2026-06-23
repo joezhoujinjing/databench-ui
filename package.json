@@ -7,10 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc -b",
+    "gen:client": "openapi-typescript schema/openapi.json -o src/api/generated/schema.ts",
+    "gen:client:check": "openapi-typescript schema/openapi.json -o src/api/generated/schema.ts && git diff --exit-code -- src/api/generated/schema.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.59.0",
+    "@tanstack/react-virtual": "^3.14.3",
     "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^8.2.1",
     "react": "^18.3.1",
@@ -23,6 +27,7 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
+    "openapi-typescript": "^7.13.0",
     "typescript": "^5.6.2",
     "vite": "^5.4.8"
   }

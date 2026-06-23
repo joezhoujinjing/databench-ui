@@ -6,10 +6,12 @@ import { Card, InlineError } from '../components/ui'
 import { ManifestView } from '../components/ManifestView'
 
 const PLACEHOLDER = `{
-  "steps": [
-    { "op": "ingest", "ref": "my-dataset" },
-    { "op": "transform", "name": "dedup", "params": {} }
-  ]
+  "name": "my-mix",
+  "sources": [
+    { "dataset": "material-sft", "weight": 1.0 }
+  ],
+  "target_format": "messages-jsonl",
+  "seed": 0
 }`
 
 export function RecipePage() {

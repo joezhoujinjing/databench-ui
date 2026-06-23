@@ -97,6 +97,12 @@ a:hover { text-decoration: underline; }
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 .health-meta { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+.health-ver { font-size: 11px; color: var(--muted); border-left: 1px solid var(--border); padding-left: 8px; }
+.connection-hint { font-size: 11px; margin-top: -2px; }
+.feature-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.feature-flags .badge { font-size: 10px; padding: 1px 6px; }
+.feature-on { border-color: var(--ok); color: #8ee6a3; }
+.feature-off { opacity: 0.5; text-decoration: line-through; }
 
 /* ---------- cards ---------- */
 .card {
@@ -212,6 +218,7 @@ a:hover { text-decoration: underline; }
 .state-loading { color: var(--muted); }
 .state-empty { color: var(--muted); background: var(--panel-2); border: 1px dashed var(--border); }
 .state-error { color: var(--err); background: rgba(255,92,92,0.08); border: 1px solid rgba(255,92,92,0.3); }
+.state-disabled { color: var(--warn); background: rgba(255,176,32,0.08); border: 1px solid rgba(255,176,32,0.3); }
 
 .text-muted { color: var(--muted); }
 .text-error { color: var(--err); font-size: 13px; margin-top: 8px; }
@@ -219,9 +226,23 @@ a:hover { text-decoration: underline; }
 /* ---------- misc ---------- */
 .row { display: flex; align-items: center; }
 .row.gap { gap: 10px; }
+.row.gap-sm { gap: 6px; }
 .row.between { justify-content: space-between; }
 .gap { gap: 10px; }
 .mt { margin-top: 12px; }
+.input-sm { width: auto; padding: 4px 8px; font-size: 13px; }
+
+/* ---------- virtualized samples ---------- */
+.samples { display: flex; flex-direction: column; gap: 10px; }
+.samples-toolbar { font-size: 12px; }
+.samples-controls { margin-bottom: 10px; }
+.samples-end { font-size: 12px; text-align: center; padding: 8px; }
+.virtual-scroll {
+  height: 600px; overflow: auto; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--bg);
+}
+.virtual-inner { position: relative; width: 100%; }
+.virtual-row { position: absolute; top: 0; left: 0; width: 100%; padding: 6px 10px; }
 .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 
 /* ---------- tree ---------- */

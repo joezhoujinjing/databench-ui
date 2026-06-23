@@ -1,89 +1,138 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api } from './client'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+import { api, DEFAULT_PAGE_LIMIT } from './client'
+import { useBackendKey } from './backend'
+import { ApiError } from './http'
 import type {
-  CreateDatasetRequest,
   IngestKind,
+  IngestSamplesRequest,
   MaterializeRequest,
+  SamplesPage,
   TransformRunRequest,
 } from './types'
 
+// Every query key begins with the active backend base so switching environments
+// never serves cached data from a different backend.
+
+// Treat "feature not deployed" responses as a soft, non-retryable signal so the
+// UI can render a friendly disabled/empty state instead of an error.
+function isNotDeployed(error: unknown): boolean {
+  return error instanceof ApiError && (error.status === 404 || error.status === 501)
+}
+
 export function useHealth() {
+  const base = useBackendKey()
   return useQuery({
-    queryKey: ['health'],
+    queryKey: [base, 'health'],
     queryFn: api.health,
     refetchInterval: 15000,
     retry: false,
   })
 }
 
-export function useRefs() {
-  return useQuery({ queryKey: ['refs'], queryFn: api.listRefs })
+export function useRefs(limit = 200) {
+  const base = useBackendKey()
+  return useQuery({
+    queryKey: [base, 'refs', limit],
+    queryFn: () => api.listRefs(limit, 0),
+  })
 }
 
 export function useDataset(ref: string | undefined) {
+  const base = useBackendKey()
   return useQuery({
-    queryKey: ['dataset', ref],
+    queryKey: [base, 'dataset', ref],
     queryFn: () => api.getDataset(ref!),
     enabled: !!ref,
   })
 }
 
+// Page-at-a-time samples (classic prev/next).
 export function useSamples(ref: string | undefined, limit: number, offset: number) {
+  const base = useBackendKey()
   return useQuery({
-    queryKey: ['samples', ref, limit, offset],
+    queryKey: [base, 'samples', ref, limit, offset],
     queryFn: () => api.getSamples(ref!, limit, offset),
     enabled: !!ref,
     placeholderData: (prev) => prev,
   })
 }
 
-export function useTransforms() {
-  return useQuery({ queryKey: ['transforms'], queryFn: api.listTransforms })
-}
-
-export function useLineage(ref: string | undefined) {
-  return useQuery({
-    queryKey: ['lineage', ref],
-    queryFn: () => api.getLineage(ref!),
+// Lazy-loading samples for the virtualized table: fetch a page at a time and let
+// the table request the next page as the user scrolls. Never pulls the whole set.
+export function useInfiniteSamples(ref: string | undefined, pageSize = DEFAULT_PAGE_LIMIT) {
+  const base = useBackendKey()
+  return useInfiniteQuery({
+    queryKey: [base, 'samples-infinite', ref, pageSize],
     enabled: !!ref,
-    retry: false,
+    initialPageParam: 0,
+    queryFn: ({ pageParam, signal }) => api.getSamples(ref!, pageSize, pageParam, signal),
+    getNextPageParam: (last: SamplesPage) => {
+      const next = last.offset + last.limit
+      return next < last.total ? next : undefined
+    },
   })
 }
 
-export function useCreateDataset() {
+export function useTransforms() {
+  const base = useBackendKey()
+  return useQuery({
+    queryKey: [base, 'transforms'],
+    queryFn: () => api.listTransforms(),
+    retry: (count, error) => !isNotDeployed(error) && count < 1,
+  })
+}
+
+export function useLineage(ref: string | undefined) {
+  const base = useBackendKey()
+  return useQuery({
+    queryKey: [base, 'lineage', ref],
+    queryFn: () => api.getLineage(ref!),
+    enabled: !!ref,
+    retry: (count, error) => !isNotDeployed(error) && count < 1,
+  })
+}
+
+function useRefsInvalidation() {
   const qc = useQueryClient()
+  const base = useBackendKey()
+  return () => qc.invalidateQueries({ queryKey: [base, 'refs'] })
+}
+
+export function useCreateDataset() {
+  const invalidate = useRefsInvalidation()
   return useMutation({
-    mutationFn: (payload: CreateDatasetRequest) => api.createDataset(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['refs'] }),
+    mutationFn: (payload: IngestSamplesRequest) => api.createDataset(payload),
+    onSuccess: invalidate,
   })
 }
 
 export function useIngestJsonl() {
-  const qc = useQueryClient()
+  const invalidate = useRefsInvalidation()
   return useMutation({
-    mutationFn: (vars: {
-      file: File
-      name?: string
-      kind?: IngestKind
-      source?: string
-    }) => api.ingestJsonl(vars.file, vars),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['refs'] }),
+    mutationFn: (vars: { file: File; name?: string; kind?: IngestKind; source?: string }) =>
+      api.ingestJsonl(vars.file, vars),
+    onSuccess: invalidate,
   })
 }
 
 export function useRunTransform() {
-  const qc = useQueryClient()
+  const invalidate = useRefsInvalidation()
   return useMutation({
     mutationFn: (vars: { name: string; payload: TransformRunRequest }) =>
       api.runTransform(vars.name, vars.payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['refs'] }),
+    onSuccess: invalidate,
   })
 }
 
 export function useMaterializeRecipe() {
-  const qc = useQueryClient()
+  const invalidate = useRefsInvalidation()
   return useMutation({
     mutationFn: (payload: MaterializeRequest) => api.materializeRecipe(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['refs'] }),
+    onSuccess: invalidate,
   })
 }
