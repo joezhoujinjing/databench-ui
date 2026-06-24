@@ -22,6 +22,7 @@ import type {
   VocabulariesPage,
   VocabularyInput,
   Extractor,
+  ValidateResponse,
 } from './types'
 
 const V1 = '/v1'
@@ -111,6 +112,21 @@ export const api = {
     request<Vocabulary>(`${V1}/vocabularies/${encodeURIComponent(name)}`, {
       method: 'PUT',
       json: payload,
+    }),
+
+  // Apply a vocabulary to a dataset. dataset (+ optional output ref) are query
+  // params; the extractor body is omitted so the server resolves it from the
+  // vocab's own meta.extractor, then a dimension preset (400 if neither).
+  normalizeVocabulary: (name: string, vars: { dataset: string; ref?: string }) =>
+    request<Manifest>(`${V1}/vocabularies/${encodeURIComponent(name)}:normalize`, {
+      method: 'POST',
+      query: { dataset: vars.dataset, ref: vars.ref },
+    }),
+
+  validateVocabulary: (name: string, vars: { dataset: string; ref?: string }) =>
+    request<ValidateResponse>(`${V1}/vocabularies/${encodeURIComponent(name)}:validate`, {
+      method: 'POST',
+      query: { dataset: vars.dataset, ref: vars.ref },
     }),
 
   // ---- export (streaming NDJSON) ----

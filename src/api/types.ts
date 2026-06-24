@@ -34,6 +34,8 @@ export type VocabularyInfo = Schemas['VocabularyInfo']
 export type VocabulariesPage = Schemas['VocabulariesPage']
 export type Term = Schemas['Term']
 export type Extractor = Schemas['Extractor']
+export type ValidateResponse = Schemas['ValidateResponse']
+export type ValidateSummary = Schemas['ValidateSummary']
 export type VocabularyStatus = NonNullable<Vocabulary['status']>
 
 // Per-alias conflict surfaced on derived drafts (lives in Term.meta.alias_conflicts).

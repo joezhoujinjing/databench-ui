@@ -156,6 +156,27 @@ function useRefsInvalidation() {
   return () => qc.invalidateQueries({ queryKey: [base, 'refs'] })
 }
 
+// normalize/validate both persist a new content-addressed dataset, so a success
+// should refresh the refs list. The extractor body is never sent — the server
+// resolves it from the vocab's meta.extractor or a dimension preset.
+export function useNormalizeVocabulary() {
+  const invalidate = useRefsInvalidation()
+  return useMutation({
+    mutationFn: (vars: { name: string; dataset: string; ref?: string }) =>
+      api.normalizeVocabulary(vars.name, vars),
+    onSuccess: invalidate,
+  })
+}
+
+export function useValidateVocabulary() {
+  const invalidate = useRefsInvalidation()
+  return useMutation({
+    mutationFn: (vars: { name: string; dataset: string; ref?: string }) =>
+      api.validateVocabulary(vars.name, vars),
+    onSuccess: invalidate,
+  })
+}
+
 export function useCreateDataset() {
   const invalidate = useRefsInvalidation()
   return useMutation({

@@ -1,9 +1,22 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useVocabulary, usePutVocabulary } from '../api/hooks'
-import type { AliasConflict, Term, Vocabulary, VocabularyInput } from '../api/types'
+import {
+  useVocabulary,
+  usePutVocabulary,
+  useRefs,
+  useNormalizeVocabulary,
+  useValidateVocabulary,
+} from '../api/hooks'
+import type {
+  AliasConflict,
+  Term,
+  ValidateResponse,
+  Vocabulary,
+  VocabularyInput,
+} from '../api/types'
 import { Card, ErrorState, InlineError, JsonBlock, Spinner } from '../components/ui'
+import { ManifestView } from '../components/ManifestView'
 import { VirtualizedTerms } from '../components/VirtualizedTerms'
 
 export function VocabularyDetailPage() {
@@ -91,6 +104,8 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
         )}
       </Card>
 
+      <ApplyToDataset vocabName={routeName} dimension={vocab.dimension} />
+
       {conflicts.length > 0 && (
         <Card title={t('vocab.needsReviewTitle')}>
           <p className="text-muted">{t('vocab.needsReviewHint')}</p>
@@ -165,6 +180,123 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
         <VirtualizedTerms terms={terms} editing={editing} onAliasesChange={changeAliases} />
       </Card>
     </>
+  )
+}
+
+// Apply a curated vocabulary to a dataset. Validate checks the dataset's
+// standard labels against the vocab (and persists a signal-annotated copy);
+// normalize rewrites each std label to its canonical and persists a new
+// content-addressed dataset. The extractor body is never sent — the server
+// resolves it from the vocab's meta.extractor or a dimension preset.
+function ApplyToDataset({ vocabName, dimension }: { vocabName: string; dimension: string }) {
+  const { t } = useTranslation()
+  const refs = useRefs()
+  const normalize = useNormalizeVocabulary()
+  const validate = useValidateVocabulary()
+  const [dataset, setDataset] = useState('')
+  const [outRef, setOutRef] = useState('')
+  const [formError, setFormError] = useState<string | null>(null)
+
+  const refItems = refs.data?.items ?? []
+  const pending = normalize.isPending || validate.isPending
+
+  function run(kind: 'validate' | 'normalize') {
+    setFormError(null)
+    const ds = dataset.trim()
+    if (!ds) {
+      setFormError(t('vocab.applyErrDataset'))
+      return
+    }
+    const ref = outRef.trim() || undefined
+    if (kind === 'validate') {
+      normalize.reset()
+      validate.mutate({ name: vocabName, dataset: ds, ref })
+    } else {
+      validate.reset()
+      normalize.mutate({ name: vocabName, dataset: ds, ref })
+    }
+  }
+
+  return (
+    <Card title={t('vocab.applyTitle')}>
+      <p className="text-muted">{t('vocab.applyDescription')}</p>
+
+      <div className="form">
+        <label className="field-label">{t('vocab.applyDatasetLabel')}</label>
+        <input
+          className="input"
+          list="vocab-apply-refs"
+          value={dataset}
+          placeholder={t('vocab.applyDatasetPlaceholder')}
+          onChange={(e) => setDataset(e.target.value)}
+        />
+        <datalist id="vocab-apply-refs">
+          {refItems.map((r) => (
+            <option key={r.name} value={r.name} />
+          ))}
+        </datalist>
+
+        <label className="field-label">{t('vocab.applyOutputLabel')}</label>
+        <input
+          className="input"
+          value={outRef}
+          placeholder={t('vocab.applyOutputPlaceholder')}
+          onChange={(e) => setOutRef(e.target.value)}
+        />
+
+        <div className="row gap-sm">
+          <button className="btn" onClick={() => run('validate')} disabled={pending}>
+            {validate.isPending ? t('vocab.applyRunning') : t('vocab.validateAction')}
+          </button>
+          <button className="btn btn-primary" onClick={() => run('normalize')} disabled={pending}>
+            {normalize.isPending ? t('vocab.applyRunning') : t('vocab.normalizeAction')}
+          </button>
+        </div>
+      </div>
+
+      {formError && <div className="text-error">{formError}</div>}
+      {validate.isError && <InlineError error={validate.error} />}
+      {normalize.isError && <InlineError error={normalize.error} />}
+
+      {validate.data && <ValidateResult dimension={dimension} result={validate.data} />}
+      {normalize.data && (
+        <div className="result-block">
+          <div className="result-head">✓ {t('vocab.normalizeDone')}</div>
+          <ManifestView manifest={normalize.data} linkToDetail />
+        </div>
+      )}
+    </Card>
+  )
+}
+
+function ValidateResult({ dimension, result }: { dimension: string; result: ValidateResponse }) {
+  const { t } = useTranslation()
+  const offending = Object.entries(result.summary.offending_values ?? {})
+  return (
+    <div className="result-block">
+      <div className="result-head">✓ {t('vocab.validateDone')}</div>
+      <div className="badges vocab-meta">
+        <span className="badge">{t('vocab.validateChecked', { count: result.summary.checked })}</span>
+        <span className={result.summary.invalid > 0 ? 'badge status-review' : 'badge'}>
+          {t('vocab.validateInvalid', { count: result.summary.invalid })}
+        </span>
+        <span className="badge">
+          {t('vocab.validateSignal')}: <code>vocab_{dimension}_valid</code>
+        </span>
+      </div>
+      {offending.length > 0 && (
+        <div className="offending">
+          <span className="text-muted">{t('vocab.offendingValues')}: </span>
+          {offending.map(([value, count]) => (
+            <span key={value} className="chip">
+              {value}
+              <span className="text-muted"> ·{count}</span>
+            </span>
+          ))}
+        </div>
+      )}
+      <ManifestView manifest={result.dataset} linkToDetail />
+    </div>
   )
 }
 

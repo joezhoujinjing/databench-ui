@@ -328,6 +328,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vocabularies/{name}:normalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Normalize Vocabulary
+         * @description Rewrite each sample's standard label to the vocab's canonical.
+         *
+         *     Produces a new content-addressed dataset (with lineage) and returns its
+         *     manifest. 404 if the vocabulary is unknown; 400 if no extractor resolves.
+         */
+        post: operations["normalize_vocabulary_v1_vocabularies__name__normalize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vocabularies/{name}:validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate Vocabulary
+         * @description Flag samples whose standard label is off-vocabulary.
+         *
+         *     Persists a dataset annotated with a ``vocab_<dimension>_valid`` per-sample
+         *     signal (with lineage) and returns the summary alongside its manifest. 404 if
+         *     the vocabulary is unknown; 400 if no extractor resolves.
+         */
+        post: operations["validate_vocabulary_v1_vocabularies__name__validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/version": {
         parameters: {
             query?: never;
@@ -744,6 +791,37 @@ export interface components {
              * @description total number of items available
              */
             total: number;
+        };
+        /**
+         * ValidateResponse
+         * @description Validation summary plus the persisted, signal-annotated dataset.
+         */
+        ValidateResponse: {
+            dataset: components["schemas"]["Manifest"];
+            summary: components["schemas"]["ValidateSummary"];
+        };
+        /**
+         * ValidateSummary
+         * @description Outcome of checking a dataset's standard labels against a vocabulary.
+         */
+        ValidateSummary: {
+            /**
+             * Checked
+             * @description samples that carried a standard label to check
+             */
+            checked: number;
+            /**
+             * Invalid
+             * @description checked samples whose label is off-vocabulary
+             */
+            invalid: number;
+            /**
+             * Offending Values
+             * @description each off-vocabulary value and its frequency
+             */
+            offending_values?: {
+                [key: string]: number;
+            };
         };
         /** ValidationError */
         ValidationError: {
@@ -1402,6 +1480,86 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Vocabulary-Output"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    normalize_vocabulary_v1_vocabularies__name__normalize_post: {
+        parameters: {
+            query: {
+                /** @description source dataset ref or version */
+                dataset: string;
+                /** @description optional name for the produced dataset */
+                ref?: string | null;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Extractor"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Manifest"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    validate_vocabulary_v1_vocabularies__name__validate_post: {
+        parameters: {
+            query: {
+                /** @description source dataset ref or version */
+                dataset: string;
+                /** @description optional name for the annotated dataset */
+                ref?: string | null;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Extractor"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidateResponse"];
                 };
             };
             /** @description Validation Error */
