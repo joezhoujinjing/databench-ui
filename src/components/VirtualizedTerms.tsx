@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from 'react-i18next'
 import type { Term } from '../api/types'
@@ -56,13 +56,10 @@ export function VirtualizedTerms({
                     placeholder={t('vocab.canonicalPlaceholder')}
                     onChange={(e) => onCanonicalChange?.(vi.index, e.target.value)}
                   />
-                  <input
-                    className="input input-sm term-alias-input"
+                  <AliasInput
                     value={(term.aliases ?? []).join(', ')}
                     placeholder={t('vocab.aliasesPlaceholder')}
-                    onChange={(e) =>
-                      onAliasesChange?.(vi.index, parseAliases(e.target.value))
-                    }
+                    onCommit={(aliases) => onAliasesChange?.(vi.index, aliases)}
                   />
                   <button
                     type="button"
@@ -96,6 +93,43 @@ export function VirtualizedTerms({
         })}
       </div>
     </div>
+  )
+}
+
+// Controlled alias editor that holds the user's RAW text while focused and only
+// parses (split/trim/filter) into the alias array on blur. Parsing on every
+// keystroke would round-trip text -> array -> join(', '), which eats the
+// separator the instant a "," is typed, making it impossible to add an alias.
+// When unfocused, it re-syncs from the parent's normalized value so virtualized
+// row recycling shows the right term.
+function AliasInput({
+  value,
+  placeholder,
+  onCommit,
+}: {
+  value: string
+  placeholder: string
+  onCommit: (aliases: string[]) => void
+}) {
+  const [text, setText] = useState(value)
+  const [focused, setFocused] = useState(false)
+
+  useEffect(() => {
+    if (!focused) setText(value)
+  }, [value, focused])
+
+  return (
+    <input
+      className="input input-sm term-alias-input"
+      value={text}
+      placeholder={placeholder}
+      onChange={(e) => setText(e.target.value)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => {
+        setFocused(false)
+        onCommit(parseAliases(text))
+      }}
+    />
   )
 }
 
