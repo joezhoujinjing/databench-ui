@@ -281,6 +281,13 @@ a:hover { text-decoration: underline; }
 .term-canonical { flex: 0 0 200px; }
 .term-aliases { flex: 1; display: flex; flex-wrap: wrap; }
 .term-alias-input { flex: 1; }
+.term-row-edit { gap: 8px; align-items: center; }
+.term-canonical-input { flex: 0 0 200px; }
+.term-remove { flex: 0 0 auto; line-height: 1; padding: 4px 8px; }
+.terms-editor { display: flex; flex-direction: column; gap: 10px; }
+.term-add { display: flex; gap: 8px; align-items: center; }
+.term-add .term-canonical-input { flex: 0 0 200px; }
+.term-add .term-alias-input { flex: 1; }
 .conflicts { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
 .conflict { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; background: var(--panel-2); }
 .conflict-head { margin-bottom: 6px; }
