@@ -73,8 +73,7 @@ export function VocabulariesPage() {
               <tbody>
                 {rows.map((v) => {
                   const key = v.name ?? v.id
-                  // Summaries may omit status; the list summary has no status field.
-                  const status = (v as { status?: string }).status
+                  const status = v.status
                   return (
                     <tr key={v.id}>
                       <td>

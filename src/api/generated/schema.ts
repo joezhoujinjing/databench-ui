@@ -859,6 +859,8 @@ export interface components {
             name?: string | null;
             /** Num Terms */
             num_terms: number;
+            /** Status */
+            status?: string | null;
         };
     };
     responses: never;
