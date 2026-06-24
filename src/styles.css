@@ -212,6 +212,8 @@ a:hover { text-decoration: underline; }
   padding: 14px; background: rgba(79,140,255,0.06);
 }
 .result-head { color: var(--ok); font-weight: 600; margin-bottom: 10px; }
+.result-block { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.offending { margin: 8px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
 
 /* ---------- states ---------- */
 .state { padding: 16px; border-radius: var(--radius); margin: 10px 0; font-size: 14px; }
