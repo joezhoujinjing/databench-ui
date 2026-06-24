@@ -1,0 +1,55 @@
+name: Auto Tag Release
+
+# When a commit lands on main that changes package.json, compare the new version
+# against the previous commit's. If it bumped, create and push a v<version> tag.
+# The tag push then triggers release.yml.
+#
+# The checkout uses RELEASE_TOKEN (a PAT) on purpose: a tag pushed with the
+# default GITHUB_TOKEN does NOT trigger downstream workflows, so release.yml
+# would never run.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+
+permissions:
+  contents: write
+
+jobs:
+  auto-tag:
+    name: Tag on version bump
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Detect version change
+        id: detect
+        run: |
+          NEW=$(jq -r .version package.json)
+          OLD=$(git show HEAD~1:package.json 2>/dev/null | jq -r .version || echo "")
+          echo "package.json version: ${OLD:-<none>} -> ${NEW}"
+          echo "new=$NEW" >> "$GITHUB_OUTPUT"
+          if [ -n "$NEW" ] && [ "$NEW" != "null" ] && [ "$NEW" != "$OLD" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create and push tag
+        if: steps.detect.outputs.changed == 'true'
+        run: |
+          TAG="v${{ steps.detect.outputs.new }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists on origin; skipping."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+          echo "Pushed $TAG"
