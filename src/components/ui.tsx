@@ -29,6 +29,31 @@ function messageFor(error: unknown): string {
   return i18n.t('common.unknownError')
 }
 
+// Pull the specific, per-field validation messages out of an error envelope so a
+// curator can see WHICH value is at fault (e.g. "alias '万马' maps to both '3M'
+// and '万马股份'") instead of just the generic "request validation failed".
+// Tolerant: the detail lives at body.error.detail (unified) or body.detail
+// (legacy FastAPI) and may be an array of objects, a string, or absent.
+function detailMessages(error: unknown): string[] {
+  if (!(error instanceof ApiError) || error.status === 0) return []
+  const body = error.detail
+  if (!body || typeof body !== 'object') return []
+  const env = (body as { error?: { detail?: unknown } }).error
+  const detail = env?.detail ?? (body as { detail?: unknown }).detail
+  if (typeof detail === 'string' && detail.trim()) return [stripValueError(detail)]
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) => (d && typeof d === 'object' ? String((d as { msg?: unknown }).msg ?? '') : String(d)))
+      .map(stripValueError)
+      .filter(Boolean)
+  }
+  return []
+}
+
+function stripValueError(msg: string): string {
+  return msg.replace(/^Value error,\s*/, '').trim()
+}
+
 export function ErrorState({ error }: { error: unknown }) {
   const { t } = useTranslation()
   return (
@@ -38,9 +63,19 @@ export function ErrorState({ error }: { error: unknown }) {
   )
 }
 
-// Inline error suited for forms / mutation results.
+// Inline error suited for forms / mutation results. When the envelope carries
+// per-field validation details, list each specific message (falling back to the
+// top-level message when none are present).
 export function InlineError({ error }: { error: unknown }) {
-  return <div className="text-error">{messageFor(error)}</div>
+  const details = detailMessages(error)
+  if (details.length === 0) return <div className="text-error">{messageFor(error)}</div>
+  return (
+    <div className="text-error">
+      {details.map((msg, i) => (
+        <div key={i}>{msg}</div>
+      ))}
+    </div>
+  )
 }
 
 export function Card({ title, children }: { title?: ReactNode; children: ReactNode }) {

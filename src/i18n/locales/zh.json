@@ -191,7 +191,16 @@
     "rawKeyLabel": "原始键（raw key）",
     "stdKeyLabel": "标准键（std key）",
     "errRequired": "名称、数据集和维度为必填项。",
-    "errExtractorKeys": "请同时填写原始键和标准键，或将提取器留空。"
+    "errExtractorKeys": "请同时填写原始键和标准键，或将提取器留空。",
+    "newAction": "新建",
+    "createTitle": "创建词表",
+    "createDescription": "手动构建词表：填写名称、维度，并添加词条及其别名。提交时由服务端强制执行严格约束：规范词唯一、每个别名仅对应一个规范词、别名与规范词互不相交。",
+    "createAction": "创建词表",
+    "canonicalPlaceholder": "规范词",
+    "addTerm": "添加词条",
+    "removeTerm": "删除词条",
+    "errNameDimension": "名称和维度为必填项。",
+    "errNoTerms": "请至少添加一个词条。"
   },
   "manifest": {
     "version": "版本",

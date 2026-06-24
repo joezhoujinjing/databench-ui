@@ -191,7 +191,16 @@
     "rawKeyLabel": "Raw key",
     "stdKeyLabel": "Std key",
     "errRequired": "Name, dataset and dimension are required.",
-    "errExtractorKeys": "Provide both raw key and std key, or leave the extractor blank."
+    "errExtractorKeys": "Provide both raw key and std key, or leave the extractor blank.",
+    "newAction": "New",
+    "createTitle": "Create vocabulary",
+    "createDescription": "Build a vocabulary by hand: give it a name, a dimension, and add terms with their aliases. Submitting enforces the strict invariant server-side: unique canonicals, one canonical per alias, aliases disjoint from canonicals.",
+    "createAction": "Create vocabulary",
+    "canonicalPlaceholder": "canonical term",
+    "addTerm": "Add term",
+    "removeTerm": "Remove term",
+    "errNameDimension": "Name and dimension are required.",
+    "errNoTerms": "Add at least one term."
   },
   "manifest": {
     "version": "version",

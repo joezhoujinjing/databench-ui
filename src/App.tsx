@@ -14,6 +14,7 @@ import { LineagePage } from './pages/LineagePage'
 import { VocabulariesPage } from './pages/VocabulariesPage'
 import { VocabularyDetailPage } from './pages/VocabularyDetailPage'
 import { VocabularyDerivePage } from './pages/VocabularyDerivePage'
+import { VocabularyCreatePage } from './pages/VocabularyCreatePage'
 
 const NAV = [
   { to: '/datasets', key: 'nav.datasets', feature: undefined },
@@ -120,6 +121,7 @@ function AppRoutes() {
       <Route path="/lineage" element={<LineagePage />} />
       <Route path="/vocabularies" element={<VocabulariesPage />} />
       <Route path="/vocabularies/derive" element={<VocabularyDerivePage />} />
+      <Route path="/vocabularies/new" element={<VocabularyCreatePage />} />
       <Route path="/vocabularies/:name" element={<VocabularyDetailPage />} />
       <Route path="*" element={<div className="card">{t('notFound')}</div>} />
     </Routes>

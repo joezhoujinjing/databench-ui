@@ -5,6 +5,7 @@ import { useVocabulary, usePutVocabulary } from '../api/hooks'
 import type { AliasConflict, Term, Vocabulary, VocabularyInput } from '../api/types'
 import { Card, ErrorState, InlineError, JsonBlock, Spinner } from '../components/ui'
 import { VirtualizedTerms } from '../components/VirtualizedTerms'
+import { TermsEditor } from '../components/TermsEditor'
 
 export function VocabularyDetailPage() {
   const { t } = useTranslation()
@@ -49,13 +50,11 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
     put.reset()
   }
 
-  function changeAliases(index: number, aliases: string[]) {
-    setDraftTerms((prev) => prev.map((tm, i) => (i === index ? { ...tm, aliases } : tm)))
-  }
-
   function submit(targetStatus: 'draft' | 'curated') {
     const payload: VocabularyInput = {
-      name: vocab.name ?? routeName,
+      // Target the route name the user navigated by, not vocab.name (which can
+      // reflect a different writer for content-identical vocabularies).
+      name: routeName,
       dimension: vocab.dimension,
       status: targetStatus,
       terms: draftTerms,
@@ -63,14 +62,14 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
       source: vocab.source ?? null,
     }
     put.mutate(
-      { name: vocab.name ?? routeName, payload },
+      { name: routeName, payload },
       { onSuccess: () => setEditing(false) },
     )
   }
 
   return (
     <>
-      <Card title={vocab.name ?? routeName}>
+      <Card title={routeName}>
         <div className="badges vocab-meta">
           <span className={`badge status-${status}`}>{t(`vocab.status.${status}`)}</span>
           <span className="badge">{t('vocab.colDimension')}: <code>{vocab.dimension}</code></span>
@@ -162,7 +161,11 @@ function VocabularyDetail({ vocab, routeName }: { vocab: Vocabulary; routeName: 
           <div className="result-head">✓ {t('vocab.saved')}</div>
         )}
 
-        <VirtualizedTerms terms={terms} editing={editing} onAliasesChange={changeAliases} />
+        {editing ? (
+          <TermsEditor terms={draftTerms} onChange={setDraftTerms} />
+        ) : (
+          <VirtualizedTerms terms={terms} />
+        )}
       </Card>
     </>
   )
