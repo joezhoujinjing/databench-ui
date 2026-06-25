@@ -5,6 +5,18 @@ follows [Keep a Changelog](https://keepachangelog.com/), and the project uses
 [Semantic Versioning](https://semver.org/). The release pipeline derives the
 GitHub Release notes from the latest section below (see `RELEASING.md`).
 
+## [0.2.2] - 2026-06-25
+
+### Fixed
+- A backend that returns a non-JSON 2xx response (e.g. an SPA-fallback host that
+  serves `index.html` for every path — which is what happens when the console is
+  pointed at its own static origin with no databench backend) now surfaces a
+  clear "connect/configure your backend" state instead of a misleading
+  "incompatible API version" banner. The typed request layer requires a JSON
+  content-type on success; a reachable backend returning valid JSON with an
+  unsupported `api_version` still shows the version-incompatibility banner as
+  before.
+
 ## [0.2.1] - 2026-06-25
 
 ### Fixed
