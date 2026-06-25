@@ -18,6 +18,11 @@ import type {
   TransformRunRequest,
   TransformsPage,
   VersionInfo,
+  Vocabulary,
+  VocabulariesPage,
+  VocabularyInput,
+  Extractor,
+  ValidateResponse,
 } from './types'
 
 const V1 = '/v1'
@@ -81,6 +86,48 @@ export const api = {
   // ---- lineage ----
   getLineage: (ref: string) =>
     request<Lineage>(`${V1}/lineage/${encodeURIComponent(ref)}`),
+
+  // ---- vocabularies ----
+  listVocabularies: (limit = MAX_PAGE_LIMIT, offset = 0) =>
+    request<VocabulariesPage>(`${V1}/vocabularies`, {
+      query: { limit: clampLimit(limit), offset },
+    }),
+
+  getVocabulary: (name: string) =>
+    request<Vocabulary>(`${V1}/vocabularies/${encodeURIComponent(name)}`),
+
+  // Derive a draft. dataset + dimension are query params; the extractor is an
+  // optional JSON body (omitted entirely so the server falls back to a preset).
+  deriveVocabulary: (
+    name: string,
+    vars: { dataset: string; dimension: string; extractor?: Extractor },
+  ) =>
+    request<Vocabulary>(`${V1}/vocabularies/${encodeURIComponent(name)}:derive`, {
+      method: 'POST',
+      query: { dataset: vars.dataset, dimension: vars.dimension },
+      json: vars.extractor,
+    }),
+
+  putVocabulary: (name: string, payload: VocabularyInput) =>
+    request<Vocabulary>(`${V1}/vocabularies/${encodeURIComponent(name)}`, {
+      method: 'PUT',
+      json: payload,
+    }),
+
+  // Apply a vocabulary to a dataset. dataset (+ optional output ref) are query
+  // params; the extractor body is omitted so the server resolves it from the
+  // vocab's own meta.extractor, then a dimension preset (400 if neither).
+  normalizeVocabulary: (name: string, vars: { dataset: string; ref?: string }) =>
+    request<Manifest>(`${V1}/vocabularies/${encodeURIComponent(name)}:normalize`, {
+      method: 'POST',
+      query: { dataset: vars.dataset, ref: vars.ref },
+    }),
+
+  validateVocabulary: (name: string, vars: { dataset: string; ref?: string }) =>
+    request<ValidateResponse>(`${V1}/vocabularies/${encodeURIComponent(name)}:validate`, {
+      method: 'POST',
+      query: { dataset: vars.dataset, ref: vars.ref },
+    }),
 
   // ---- export (streaming NDJSON) ----
   // URL is exposed for display; the actual download goes through downloadExport

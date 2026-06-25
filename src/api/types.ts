@@ -26,6 +26,26 @@ export type RLSample = Schemas['RLSample']
 export type TrajectorySample = Schemas['TrajectorySample']
 export type Message = Schemas['Message']
 
+// Vocabulary module. FastAPI splits the model into separate input/output schemas
+// (the output carries a read-only content `id`); the PUT body uses the input one.
+export type Vocabulary = Schemas['Vocabulary-Output']
+export type VocabularyInput = Schemas['Vocabulary-Input']
+export type VocabularyInfo = Schemas['VocabularyInfo']
+export type VocabulariesPage = Schemas['VocabulariesPage']
+export type Term = Schemas['Term']
+export type Extractor = Schemas['Extractor']
+export type ValidateResponse = Schemas['ValidateResponse']
+export type ValidateSummary = Schemas['ValidateSummary']
+export type VocabularyStatus = NonNullable<Vocabulary['status']>
+
+// Per-alias conflict surfaced on derived drafts (lives in Term.meta.alias_conflicts).
+// Tolerant shape: read defensively since meta is an open object.
+export interface AliasConflict {
+  chosen?: string
+  also_seen?: string[]
+  counts?: Record<string, number>
+}
+
 // A sample is the discriminated union the backend returns. We keep an index
 // signature so the UI can read fields generically (tolerant reads) without
 // having to narrow on `kind` for every access.

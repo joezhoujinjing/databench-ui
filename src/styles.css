@@ -212,6 +212,8 @@ a:hover { text-decoration: underline; }
   padding: 14px; background: rgba(79,140,255,0.06);
 }
 .result-head { color: var(--ok); font-weight: 600; margin-bottom: 10px; }
+.result-block { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.offending { margin: 8px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
 
 /* ---------- states ---------- */
 .state { padding: 16px; border-radius: var(--radius); margin: 10px 0; font-size: 14px; }
@@ -261,3 +263,33 @@ a:hover { text-decoration: underline; }
 .tree-string { color: #9ee6a3; }
 .tree-number { color: #ffd58a; }
 .tree-boolean { color: #d4b3ff; }
+
+/* ---------- vocabularies ---------- */
+.status-draft { border-color: #ffb020; color: #ffd58a; }
+.status-curated { border-color: #34c759; color: #8ee6a3; }
+.status-review { border-color: #ff5c5c; color: #ff9c9c; }
+.vocab-meta { margin: 4px 0 8px; }
+.vocab-id { font-size: 12px; margin: 0 0 4px; }
+.vocab-terms-toolbar { margin-bottom: 10px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  background: var(--panel-2); border: 1px solid var(--border);
+  padding: 1px 8px; border-radius: 12px; font-size: 12px; margin: 2px 4px 2px 0;
+}
+.chip-chosen { border-color: var(--accent-dim); color: var(--accent); }
+.term-row { display: flex; gap: 16px; align-items: baseline; }
+.term-canonical { flex: 0 0 200px; }
+.term-aliases { flex: 1; display: flex; flex-wrap: wrap; }
+.term-alias-input { flex: 1; }
+.term-row-edit { gap: 8px; align-items: center; }
+.term-canonical-input { flex: 0 0 200px; }
+.term-remove { flex: 0 0 auto; line-height: 1; padding: 4px 8px; }
+.terms-editor { display: flex; flex-direction: column; gap: 10px; }
+.term-add { display: flex; gap: 8px; align-items: center; }
+.term-add .term-canonical-input { flex: 0 0 200px; }
+.term-add .term-alias-input { flex: 1; }
+.conflicts { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+.conflict { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; background: var(--panel-2); }
+.conflict-head { margin-bottom: 6px; }
+.conflict-row { font-size: 13px; margin: 4px 0; }
+.conflict-also { margin-left: 6px; }
