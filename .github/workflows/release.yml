@@ -59,13 +59,13 @@ jobs:
       - name: Upload dist/ to OSS
         run: |
           # Mirror the build output and prune objects that no longer exist.
-          aliyun oss sync dist/ oss://databench-ui/ \
-            --endpoint oss-cn-hongkong.aliyuncs.com --delete -f --profile ci
+          aliyun --profile ci oss sync dist/ oss://databench-ui/ \
+            --endpoint oss-cn-hongkong.aliyuncs.com --delete -f
           # The SPA entrypoint must never be edge/browser cached, or users keep
           # getting the old asset hashes. Hashed assets under assets/ are
           # immutable and stay long-cached.
-          aliyun oss set-meta oss://databench-ui/index.html Cache-Control:no-cache \
-            --endpoint oss-cn-hongkong.aliyuncs.com -f --profile ci
+          aliyun --profile ci oss set-meta oss://databench-ui/index.html Cache-Control:no-cache \
+            --endpoint oss-cn-hongkong.aliyuncs.com -f
 
       - name: Refresh CDN
         run: |
