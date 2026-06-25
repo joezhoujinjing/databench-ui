@@ -5,6 +5,19 @@ follows [Keep a Changelog](https://keepachangelog.com/), and the project uses
 [Semantic Versioning](https://semver.org/). The release pipeline derives the
 GitHub Release notes from the latest section below (see `RELEASING.md`).
 
+## [0.2.0] - 2026-06-25
+
+### Fixed
+- Version gate no longer white-screens the app when the backend returns a
+  partial `/capabilities` payload. A missing/non-string `api_version` now
+  surfaces the existing incompatibility banner instead of throwing, and a
+  missing `min_client` is treated as "no enforced minimum" rather than crashing.
+
+### Changed
+- First-time visitors now default to Chinese (`zh`). The EN/中文 toggle and its
+  persisted choice (localStorage `databench.lang`) are unchanged — a returning
+  user who picked English still gets English.
+
 ## [0.1.0] - 2026-06-25
 
 Initial release of the databench console — a capability-driven web UI over the
