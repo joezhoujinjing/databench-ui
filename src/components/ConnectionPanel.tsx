@@ -81,7 +81,7 @@ export function ConnectionPanel() {
                 <div>{t('connection.schemaVersion')}: <code>{ver.schema_version}</code></div>
                 {caps.capabilities && (
                   <div className="feature-flags">
-                    {Object.entries(caps.capabilities.features).map(([name, on]) => (
+                    {Object.entries(caps.capabilities.features ?? {}).map(([name, on]) => (
                       <span key={name} className={`badge ${on ? 'feature-on' : 'feature-off'}`}>
                         {name}
                       </span>
