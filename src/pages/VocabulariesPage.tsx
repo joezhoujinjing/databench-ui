@@ -39,9 +39,14 @@ export function VocabulariesPage() {
     <Card title={t('vocab.title')}>
       <div className="row between">
         <p className="text-muted">{t('vocab.description')}</p>
-        <Link className="btn btn-primary btn-sm" to="/vocabularies/derive">
-          {t('vocab.deriveAction')}
-        </Link>
+        <div className="row gap-sm">
+          <Link className="btn btn-sm" to="/vocabularies/new">
+            {t('vocab.newAction')}
+          </Link>
+          <Link className="btn btn-primary btn-sm" to="/vocabularies/derive">
+            {t('vocab.deriveAction')}
+          </Link>
+        </div>
       </div>
 
       {vocabs.isLoading && <Spinner />}

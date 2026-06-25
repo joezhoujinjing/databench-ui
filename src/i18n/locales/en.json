@@ -207,7 +207,16 @@
     "validateChecked": "{{count}} checked",
     "validateInvalid": "{{count}} invalid",
     "validateSignal": "Signal",
-    "offendingValues": "Off-vocabulary values"
+    "offendingValues": "Off-vocabulary values",
+    "newAction": "New",
+    "createTitle": "Create vocabulary",
+    "createDescription": "Build a vocabulary by hand: give it a name, a dimension, and add terms with their aliases. Submitting enforces the strict invariant server-side: unique canonicals, one canonical per alias, aliases disjoint from canonicals.",
+    "createAction": "Create vocabulary",
+    "canonicalPlaceholder": "canonical term",
+    "addTerm": "Add term",
+    "removeTerm": "Remove term",
+    "errNameDimension": "Name and dimension are required.",
+    "errNoTerms": "Add at least one term."
   },
   "manifest": {
     "version": "version",
