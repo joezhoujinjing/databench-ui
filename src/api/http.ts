@@ -130,13 +130,20 @@ export async function rawRequest(path: string, opts: RequestOptions = {}): Promi
   }
 }
 
-// Typed JSON request. Throws ApiError on non-2xx.
+// Typed JSON request. Throws ApiError on non-2xx, and on 2xx responses that
+// aren't JSON (e.g. an SPA-fallback host that returns index.html for every
+// path — that isn't a databench backend, so we treat it as not-connected
+// rather than silently returning HTML cast to T).
 export async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
   const res = await rawRequest(path, opts)
   const body = await parseBody(res)
   if (!res.ok) {
     const { code, message } = describeError(res.status, body)
     throw new ApiError(res.status, code, message, body)
+  }
+  const ct = res.headers.get('content-type') ?? ''
+  if (!ct.includes('application/json')) {
+    throw new ApiError(res.status, 'not_databench', i18n.t('errors.notDatabench'), body)
   }
   return body as T
 }

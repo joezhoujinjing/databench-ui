@@ -230,6 +230,7 @@
   },
   "errors": {
     "unreachable": "无法连接后端。databench 服务在运行吗？",
+    "notDatabench": "连接到了一个服务，但它没有返回 databench API 响应。请在右上角连接面板将控制台指向 databench 后端。",
     "badRequest": "请求错误（解析失败）",
     "notFound": "未找到",
     "validation": "校验失败",
