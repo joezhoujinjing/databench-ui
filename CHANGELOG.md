@@ -5,6 +5,16 @@ follows [Keep a Changelog](https://keepachangelog.com/), and the project uses
 [Semantic Versioning](https://semver.org/). The release pipeline derives the
 GitHub Release notes from the latest section below (see `RELEASING.md`).
 
+## [0.2.1] - 2026-06-25
+
+### Fixed
+- Connection panel no longer white-screens when the backend returns a partial
+  `/capabilities` payload missing the `features` object. Opening the panel ran
+  `Object.entries(capabilities.features)` on `undefined`; the feature-flag list
+  now coerces a missing/non-object `features` to empty and renders no badges
+  instead of crashing. Same partial-backend degradation theme as the 0.2.0
+  version-gate fix.
+
 ## [0.2.0] - 2026-06-25
 
 ### Fixed
