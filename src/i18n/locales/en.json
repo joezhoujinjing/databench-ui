@@ -230,6 +230,7 @@
   },
   "errors": {
     "unreachable": "Cannot reach the backend. Is the databench service running?",
+    "notDatabench": "Connected to a server, but it didn't return a databench API response. Point the console at a databench backend from the connection panel (top right).",
     "badRequest": "Bad request (parse error)",
     "notFound": "Not found",
     "validation": "Validation error",
