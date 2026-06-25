@@ -15,15 +15,16 @@ i18n
       en: { translation: en },
       zh: { translation: zh },
     },
-    fallbackLng: 'en',
+    fallbackLng: 'zh',
     supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
     // Map e.g. zh-CN / zh-TW -> zh, en-US -> en.
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,
     interpolation: { escapeValue: false },
     detection: {
-      // Persisted choice wins; otherwise follow the browser, then fall back.
-      order: ['localStorage', 'navigator'],
+      // Persisted choice wins; otherwise fall back to zh. Browser locale is
+      // intentionally not consulted so non-Chinese browsers still default to zh.
+      order: ['localStorage'],
       lookupLocalStorage: 'databench.lang',
       caches: ['localStorage'],
     },
